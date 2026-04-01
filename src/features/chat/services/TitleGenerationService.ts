@@ -127,7 +127,7 @@ Generate a title for this conversation:`;
           return;
         }
 
-        const text = this.extractTextFromMessage(message);
+        const text = this.extractTextFromMessage(message as Parameters<typeof this.extractTextFromMessage>[0]);
         if (text) {
           responseText += text;
         }

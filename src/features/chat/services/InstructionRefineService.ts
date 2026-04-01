@@ -128,7 +128,7 @@ export class InstructionRefineService {
           this.sessionId = message.session_id;
         }
 
-        const text = this.extractTextFromMessage(message);
+        const text = this.extractTextFromMessage(message as Parameters<typeof this.extractTextFromMessage>[0]);
         if (text) {
           responseText += text;
           // Stream progress updates

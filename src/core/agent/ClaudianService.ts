@@ -1132,7 +1132,8 @@ export class ClaudianService {
       type: 'user',
       message: {
         role: 'user',
-        content,
+        // SDK 0.2.89 changed content type; UserContentBlock is structurally compatible
+        content: content as unknown as SDKUserMessage['message']['content'],
       },
       parent_tool_use_id: null,
       session_id: sessionId,
@@ -1295,7 +1296,7 @@ export class ClaudianService {
         type: 'user',
         message: {
           role: 'user',
-          content,
+          content: content as unknown as SDKUserMessage['message']['content'],
         },
       };
     }
