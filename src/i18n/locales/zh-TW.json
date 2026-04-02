@@ -374,6 +374,23 @@
     "language": {
       "name": "語言",
       "desc": "更改插件介面的顯示語言"
+    },
+    "slackNotifications": {
+      "name": "Slack Notifications",
+      "channel": {
+        "name": "Notification Channel",
+        "desc": "Slack channel name to send schedule notifications (e.g. general)"
+      },
+      "reminderMinutes": {
+        "name": "Default Reminder Time",
+        "desc": "How many minutes before the scheduled event to send a Slack reminder",
+        "none": "No reminder",
+        "1min": "1 minute before",
+        "5min": "5 minutes before",
+        "10min": "10 minutes before",
+        "15min": "15 minutes before",
+        "30min": "30 minutes before"
+      }
     }
   }
 }

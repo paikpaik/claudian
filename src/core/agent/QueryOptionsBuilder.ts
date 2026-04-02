@@ -189,6 +189,8 @@ export class QueryOptionsBuilder {
       allowExternalAccess: ctx.settings.allowExternalAccess,
       vaultPath: ctx.vaultPath,
       userName: ctx.settings.userName,
+      slackNotificationChannel: ctx.settings.slackNotificationChannel,
+      slackDefaultReminderMinutes: ctx.settings.slackDefaultReminderMinutes,
     });
 
     const options: Options = {
@@ -253,6 +255,8 @@ export class QueryOptionsBuilder {
       allowExternalAccess: ctx.settings.allowExternalAccess,
       vaultPath: ctx.vaultPath,
       userName: ctx.settings.userName,
+      slackNotificationChannel: ctx.settings.slackNotificationChannel,
+      slackDefaultReminderMinutes: ctx.settings.slackDefaultReminderMinutes,
     });
 
     const options: Options = {

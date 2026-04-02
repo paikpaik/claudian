@@ -400,6 +400,39 @@ export class ClaudianSettingTab extends PluginSettingTab {
     const pluginsContainer = containerEl.createDiv({ cls: 'claudian-plugins-container' });
     new PluginSettingsManager(pluginsContainer, this.plugin);
 
+    new Setting(containerEl).setName(t('settings.slackNotifications.name')).setHeading();
+
+    new Setting(containerEl)
+      .setName(t('settings.slackNotifications.channel.name'))
+      .setDesc(t('settings.slackNotifications.channel.desc'))
+      .addText((text) =>
+        text
+          .setPlaceholder('general')
+          .setValue(this.plugin.settings.slackNotificationChannel)
+          .onChange(async (value) => {
+            this.plugin.settings.slackNotificationChannel = value.trim() || 'general';
+            await this.plugin.saveSettings();
+          })
+      );
+
+    new Setting(containerEl)
+      .setName(t('settings.slackNotifications.reminderMinutes.name'))
+      .setDesc(t('settings.slackNotifications.reminderMinutes.desc'))
+      .addDropdown((dropdown) =>
+        dropdown
+          .addOption('0', t('settings.slackNotifications.reminderMinutes.none'))
+          .addOption('1', t('settings.slackNotifications.reminderMinutes.1min'))
+          .addOption('5', t('settings.slackNotifications.reminderMinutes.5min'))
+          .addOption('10', t('settings.slackNotifications.reminderMinutes.10min'))
+          .addOption('15', t('settings.slackNotifications.reminderMinutes.15min'))
+          .addOption('30', t('settings.slackNotifications.reminderMinutes.30min'))
+          .setValue(String(this.plugin.settings.slackDefaultReminderMinutes))
+          .onChange(async (value) => {
+            this.plugin.settings.slackDefaultReminderMinutes = parseInt(value, 10);
+            await this.plugin.saveSettings();
+          })
+      );
+
     new Setting(containerEl).setName(t('settings.safety')).setHeading();
 
     new Setting(containerEl)

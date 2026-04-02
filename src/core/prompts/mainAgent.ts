@@ -14,6 +14,8 @@ export interface SystemPromptSettings {
   allowExternalAccess?: boolean;
   vaultPath?: string;
   userName?: string;
+  slackNotificationChannel?: string;
+  slackDefaultReminderMinutes?: number;
 }
 
 function getPathRules(vaultPath?: string, allowExternalAccess: boolean = false): string {
@@ -341,6 +343,33 @@ cp ./note.md ~/Desktop/note.md
 }
 
 
+function getScheduleInstructions(channel: string, reminderMinutes: number): string {
+  const reminderDesc = reminderMinutes > 0
+    ? `${reminderMinutes}분 전`
+    : '없음';
+
+  return `
+
+## 일정 자동 등록
+
+사용자 메시지에서 **일정/약속/미팅/회의 추가 의도**가 감지되면 (/schedule 명령어 없이도) 아래 절차를 **즉시 자동 실행**하세요. 질문이나 확인 없이 실행합니다.
+
+**감지 패턴 예시:**
+- "X시에 회의있어", "X시에 미팅 추가해줘", "X시 약속 잡아줘"
+- "내일 오전 X시 스탠드업", "X시 X분에 Y있어"
+- "일정 추가: ..." , "스케줄 등록해줘"
+
+**실행 절차:**
+
+1. **시간 파싱** — 날짜/시간과 내용을 추출. 날짜 없으면 오늘. 시간 예시: "밤 9시" → 21:00, "오후 3시" → 15:00
+2. **Daily Note 업데이트** — \`YYYY-MM-DD.md\` 파일의 \`## 일정\` 섹션에 \`- [ ] HH:MM 내용\` 추가 (없으면 파일/섹션 생성)
+3. **Slack 즉시 알림** — Slack MCP가 활성화되어 있으면 \`#${channel}\` 채널에 \`📅 일정 등록: HH:MM 내용\` 전송
+4. **Slack 예약 알림** — 기본 ${reminderDesc} 리마인더 예약 (요청에 "X분 전" 명시 시 우선 적용, 0분이면 생략). 메시지: \`⏰ X분 후 일정 시작: HH:MM 내용\`
+5. **완료 응답** — \`✅ 일정 등록 완료: HH:MM 내용 (${reminderDesc} Slack 알림 예약됨)\`
+
+**단순 일정 조회**(예: "오늘 일정 알려줘")는 위 절차를 실행하지 말고 Daily Note를 읽어 답변하세요.`;
+}
+
 export function buildSystemPrompt(settings: SystemPromptSettings = {}): string {
   const allowExternalAccess = settings.allowExternalAccess ?? false;
 
@@ -349,6 +378,10 @@ export function buildSystemPrompt(settings: SystemPromptSettings = {}): string {
   // Stable content (ordered for context cache optimization)
   prompt += getImageInstructions(settings.mediaFolder || '');
   prompt += getExportInstructions(settings.allowedExportPaths || [], allowExternalAccess);
+
+  const channel = settings.slackNotificationChannel || 'general';
+  const reminderMinutes = settings.slackDefaultReminderMinutes ?? 5;
+  prompt += getScheduleInstructions(channel, reminderMinutes);
 
   if (settings.customPrompt?.trim()) {
     prompt += '\n\n## Custom Instructions\n\n' + settings.customPrompt.trim();
