@@ -314,4 +314,17 @@ export type TranslationKey =
 
   // Settings - Language
   | 'settings.language.name'
-  | 'settings.language.desc';
+  | 'settings.language.desc'
+
+  // Settings - Slack Notifications
+  | 'settings.slackNotifications.name'
+  | 'settings.slackNotifications.channel.name'
+  | 'settings.slackNotifications.channel.desc'
+  | 'settings.slackNotifications.reminderMinutes.name'
+  | 'settings.slackNotifications.reminderMinutes.desc'
+  | 'settings.slackNotifications.reminderMinutes.none'
+  | 'settings.slackNotifications.reminderMinutes.1min'
+  | 'settings.slackNotifications.reminderMinutes.5min'
+  | 'settings.slackNotifications.reminderMinutes.10min'
+  | 'settings.slackNotifications.reminderMinutes.15min'
+  | 'settings.slackNotifications.reminderMinutes.30min';

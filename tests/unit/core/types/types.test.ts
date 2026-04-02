@@ -131,6 +131,8 @@ describe('types.ts', () => {
         openInMainTab: false,
         hiddenSlashCommands: [],
         effortLevel: 'high',
+        slackNotificationChannel: 'general',
+        slackDefaultReminderMinutes: 5,
       };
 
       expect(settings.enableBlocklist).toBe(false);
@@ -173,6 +175,8 @@ describe('types.ts', () => {
         openInMainTab: false,
         hiddenSlashCommands: [],
         effortLevel: 'high',
+        slackNotificationChannel: 'general',
+        slackDefaultReminderMinutes: 5,
       };
 
       expect(settings.model).toBe('anthropic/custom-model-v1');
@@ -215,6 +219,8 @@ describe('types.ts', () => {
         openInMainTab: false,
         hiddenSlashCommands: [],
         effortLevel: 'high',
+        slackNotificationChannel: 'general',
+        slackDefaultReminderMinutes: 5,
       };
 
       expect(settings.lastClaudeModel).toBe('opus');

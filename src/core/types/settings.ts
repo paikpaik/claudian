@@ -299,6 +299,10 @@ export interface ClaudianSettings {
 
   // Slash commands
   hiddenSlashCommands: string[];  // Command names to hide from dropdown (user preference)
+
+  // Slack notification settings
+  slackNotificationChannel: string;    // Slack channel name (default: 'general')
+  slackDefaultReminderMinutes: number; // Minutes before event to send reminder (0 = no reminder)
 }
 
 /** Default Claudian-specific settings. */
@@ -365,6 +369,10 @@ export const DEFAULT_SETTINGS: ClaudianSettings = {
 
   // Slash commands
   hiddenSlashCommands: [],  // No commands hidden by default
+
+  // Slack notification settings
+  slackNotificationChannel: 'general',
+  slackDefaultReminderMinutes: 5,
 };
 
 /** Default CC-compatible settings. */

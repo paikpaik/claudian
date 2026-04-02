@@ -374,6 +374,23 @@
     "language": {
       "name": "언어",
       "desc": "플러그인 인터페이스의 표시 언어 변경"
+    },
+    "slackNotifications": {
+      "name": "Slack 알림",
+      "channel": {
+        "name": "알림 채널",
+        "desc": "일정 알림을 보낼 Slack 채널 이름 (예: general)"
+      },
+      "reminderMinutes": {
+        "name": "기본 알림 시간",
+        "desc": "일정 시작 몇 분 전에 Slack 알림을 보낼지 설정합니다",
+        "none": "알림 없음",
+        "1min": "1분 전",
+        "5min": "5분 전",
+        "10min": "10분 전",
+        "15min": "15분 전",
+        "30min": "30분 전"
+      }
     }
   }
 }
