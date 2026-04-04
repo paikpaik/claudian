@@ -208,7 +208,7 @@ async function getRequestBody(body: BodyInit | null | undefined): Promise<Buffer
 
 const nodeFetch = createNodeFetch();
 
-export async function testMcpServer(server: ClaudianMcpServer): Promise<McpTestResult> {
+export async function testMcpServer(server: ClaudianMcpServer, cliPath?: string): Promise<McpTestResult> {
   const type = getMcpServerType(server.config);
 
   let transport;
@@ -222,7 +222,7 @@ export async function testMcpServer(server: ClaudianMcpServer): Promise<McpTestR
       transport = new StdioClientTransport({
         command: cmd,
         args,
-        env: { ...process.env, ...config.env, PATH: getEnhancedPath(config.env?.PATH) } as Record<string, string>,
+        env: { ...process.env, ...config.env, PATH: getEnhancedPath(config.env?.PATH, cliPath) } as Record<string, string>,
         stderr: 'ignore',
       });
     } else {
