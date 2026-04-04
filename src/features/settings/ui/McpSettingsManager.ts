@@ -178,7 +178,8 @@ export class McpSettingsManager {
     modal.open();
 
     try {
-      const result = await testMcpServer(server);
+      const cliPath = this.plugin.getResolvedClaudeCliPath() ?? undefined;
+      const result = await testMcpServer(server, cliPath);
       modal.setResult(result);
     } catch (error) {
       modal.setError(error instanceof Error ? error.message : 'Verification failed');
