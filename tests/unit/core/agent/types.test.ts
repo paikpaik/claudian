@@ -38,7 +38,7 @@ describe('computeSystemPromptKey', () => {
     const key = computeSystemPromptKey(settings);
 
     // Paths are sorted to keep the key stable.
-    expect(key).toBe('attachments::Be helpful::/path/a|/path/b::/vault::Alice::false');
+    expect(key).toBe('attachments::Be helpful::/path/a|/path/b::/vault::Alice::false::false');
   });
 
   it('handles empty/undefined values', () => {
@@ -51,8 +51,8 @@ describe('computeSystemPromptKey', () => {
     };
 
     const key = computeSystemPromptKey(settings);
-    // 6 parts joined with '::' = 5 separators = 10 colons, last part is 'false'
-    expect(key).toBe('::::::::::false');
+    // 7 parts joined with '::' = 6 separators, last two parts are 'false::false'
+    expect(key).toBe('::::::::::false::false');
   });
 
   it('produces different keys for different inputs', () => {

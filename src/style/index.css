@@ -44,6 +44,7 @@
 @import "./modals/instruction.css";
 @import "./modals/mcp-modal.css";
 @import "./modals/fork-target.css";
+@import "./modals/pomodoro.css";
 
 /* Settings */
 @import "./settings/base.css";

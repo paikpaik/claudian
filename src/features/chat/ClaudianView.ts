@@ -3,6 +3,7 @@ import { ItemView, Notice, Scope, setIcon } from 'obsidian';
 
 import { getContextWindowSize, VIEW_TYPE_CLAUDIAN } from '../../core/types';
 import type ClaudianPlugin from '../../main';
+import { PomodoroWidget } from '../../shared/modals/PomodoroWidget';
 import { LOGO_SVG } from './constants';
 import { TabBar, TabManager, updatePlanModeUI } from './tabs';
 import type { TabData, TabId } from './tabs/types';
@@ -28,6 +29,9 @@ export class ClaudianView extends ItemView {
 
   // Header elements
   private historyDropdown: HTMLElement | null = null;
+
+  // Pomodoro / Sprint timer widget (singleton per view, toggled by header button)
+  private pomodoroWidget: PomodoroWidget | null = null;
 
   // Event refs for cleanup
   private eventRefs: EventRef[] = [];
@@ -199,6 +203,10 @@ export class ClaudianView extends ItemView {
     // Cleanup tab bar
     this.tabBar?.destroy();
     this.tabBar = null;
+
+    // Destroy floating timer widget if open
+    this.pomodoroWidget?.destroy();
+    this.pomodoroWidget = null;
   }
 
   // ============================================
@@ -253,6 +261,21 @@ export class ClaudianView extends ItemView {
     // Header actions (right side)
     this.headerActionsContent = document.createElement('div');
     this.headerActionsContent.className = 'claudian-header-actions';
+
+    // Pomodoro / Sprint timer toggle button
+    const timerBtn = this.headerActionsContent.createDiv({ cls: 'claudian-header-btn' });
+    setIcon(timerBtn, 'timer');
+    timerBtn.setAttribute('aria-label', '뽀모도로 / 디자인 스프린트 타이머');
+    timerBtn.addEventListener('click', () => {
+      if (this.pomodoroWidget) {
+        this.pomodoroWidget.close();
+        this.pomodoroWidget = null;
+      } else {
+        this.pomodoroWidget = new PomodoroWidget({
+          onClose: () => { this.pomodoroWidget = null; },
+        });
+      }
+    });
 
     // New tab button (plus icon)
     const newTabBtn = this.headerActionsContent.createDiv({ cls: 'claudian-header-btn claudian-new-tab-btn' });

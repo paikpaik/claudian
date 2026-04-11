@@ -14,3 +14,136 @@
   color: var(--text-muted);
   text-transform: uppercase;
 }
+
+/* ── Plugin Commands Section ── */
+
+.claudian-pc-section {
+  margin-top: 20px;
+  border-top: 1px solid var(--background-modifier-border);
+  padding-top: 12px;
+}
+
+.claudian-pc-details {
+  border-radius: 6px;
+}
+
+.claudian-pc-summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 4px 12px;
+  border-radius: 6px;
+  list-style: none;
+  user-select: none;
+}
+
+.claudian-pc-summary:hover {
+  background: var(--background-modifier-hover);
+}
+
+.claudian-pc-summary::-webkit-details-marker {
+  display: none;
+}
+
+.claudian-pc-summary-label {
+  font-size: var(--font-ui-small);
+  color: var(--text-muted);
+  font-weight: var(--font-medium);
+  flex: 1;
+}
+
+.claudian-pc-summary-count {
+  font-size: var(--font-ui-smaller);
+  color: var(--text-faint);
+  background: var(--background-modifier-border);
+  padding: 1px 6px;
+  border-radius: 10px;
+}
+
+.claudian-pc-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 0 2px;
+}
+
+.claudian-pc-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  background: var(--background-secondary);
+  border-radius: 6px;
+  gap: 12px;
+}
+
+.claudian-pc-item:hover {
+  background: var(--background-modifier-hover);
+}
+
+.claudian-pc-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.claudian-pc-badge {
+  font-size: 10px;
+  padding: 2px 6px;
+  background: var(--interactive-accent);
+  color: var(--text-on-accent);
+  border-radius: 4px;
+  opacity: 0.7;
+}
+
+.claudian-pc-add-btn {
+  flex-shrink: 0;
+  padding: 4px 12px;
+  border: 1px solid var(--interactive-accent);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--interactive-accent);
+  font-size: var(--font-ui-small);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+  white-space: nowrap;
+}
+
+.claudian-pc-add-btn:hover {
+  background: var(--interactive-accent);
+  color: var(--text-on-accent);
+}
+
+.claudian-pc-added {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  font-size: var(--font-ui-small);
+  color: var(--text-success, var(--color-green));
+  opacity: 0.8;
+}
+
+.claudian-pc-added svg {
+  width: 13px;
+  height: 13px;
+}
+
+.claudian-pc-update-btn {
+  flex-shrink: 0;
+  padding: 4px 12px;
+  border: 1px solid var(--color-orange, #e08a00);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--color-orange, #e08a00);
+  font-size: var(--font-ui-small);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+  white-space: nowrap;
+}
+
+.claudian-pc-update-btn:hover {
+  background: var(--color-orange, #e08a00);
+  color: #fff;
+}

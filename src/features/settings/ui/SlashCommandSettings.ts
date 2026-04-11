@@ -1,6 +1,7 @@
 import type { App, ToggleComponent } from 'obsidian';
 import { Modal, Notice, setIcon, Setting } from 'obsidian';
 
+import { PLUGIN_COMMANDS, templateToSlashCommand } from '../../../core/commands/pluginCommands';
 import type { SlashCommand } from '../../../core/types';
 import { t } from '../../../i18n';
 import type ClaudianPlugin from '../../../main';
@@ -313,13 +314,90 @@ export class SlashCommandSettings {
     if (commands.length === 0) {
       const emptyEl = this.containerEl.createDiv({ cls: 'claudian-sp-empty-state' });
       emptyEl.setText(t('settings.slashCommands.noCommands'));
-      return;
+    } else {
+      const listEl = this.containerEl.createDiv({ cls: 'claudian-sp-list' });
+      for (const cmd of commands) {
+        this.renderCommandItem(listEl, cmd);
+      }
     }
 
-    const listEl = this.containerEl.createDiv({ cls: 'claudian-sp-list' });
+    this.renderPluginCommandsSection();
+  }
 
-    for (const cmd of commands) {
-      this.renderCommandItem(listEl, cmd);
+  private renderPluginCommandsSection(): void {
+    const sectionEl = this.containerEl.createDiv({ cls: 'claudian-pc-section' });
+
+    const details = sectionEl.createEl('details', { cls: 'claudian-pc-details' });
+    const summary = details.createEl('summary', { cls: 'claudian-pc-summary' });
+    summary.createSpan({ text: '기본 제공 커맨드', cls: 'claudian-pc-summary-label' });
+    summary.createSpan({ text: `${PLUGIN_COMMANDS.length}개`, cls: 'claudian-pc-summary-count' });
+
+    const listEl = details.createDiv({ cls: 'claudian-pc-list' });
+
+    const installedMap = new Map(
+      this.plugin.settings.slashCommands.map(c => [c.name.toLowerCase(), c])
+    );
+
+    for (const template of PLUGIN_COMMANDS) {
+      const itemEl = listEl.createDiv({ cls: 'claudian-pc-item' });
+
+      const infoEl = itemEl.createDiv({ cls: 'claudian-pc-info' });
+
+      const headerRow = infoEl.createDiv({ cls: 'claudian-sp-item-header' });
+      headerRow.createSpan({ text: `/${template.name}`, cls: 'claudian-sp-item-name' });
+      headerRow.createSpan({ text: template.category, cls: 'claudian-pc-badge' });
+
+      infoEl.createDiv({ text: template.description, cls: 'claudian-sp-item-desc' });
+
+      const installed = installedMap.get(template.name.toLowerCase());
+      const templateCmd = templateToSlashCommand(template);
+      const needsUpdate = installed !== undefined && installed.content !== templateCmd.content;
+
+      if (!installed) {
+        const addBtn = itemEl.createEl('button', { text: '추가', cls: 'claudian-pc-add-btn' });
+        addBtn.addEventListener('click', async () => {
+          await this.installPluginCommand(template.name);
+        });
+      } else if (needsUpdate) {
+        const updateBtn = itemEl.createEl('button', { text: '업데이트', cls: 'claudian-pc-update-btn' });
+        updateBtn.addEventListener('click', async () => {
+          await this.updatePluginCommand(template.name);
+        });
+      } else {
+        const addedEl = itemEl.createDiv({ cls: 'claudian-pc-added' });
+        setIcon(addedEl.createSpan(), 'check');
+        addedEl.createSpan({ text: '최신' });
+      }
+    }
+  }
+
+  private async installPluginCommand(templateName: string): Promise<void> {
+    const template = PLUGIN_COMMANDS.find(t => t.name === templateName);
+    if (!template) return;
+
+    const cmd = templateToSlashCommand(template);
+    try {
+      await this.plugin.storage.commands.save(cmd);
+      await this.reloadCommands();
+      this.render();
+      new Notice(`/${template.name} 커맨드가 추가됐어.`);
+    } catch {
+      new Notice(`/${template.name} 커맨드 추가에 실패했어.`);
+    }
+  }
+
+  private async updatePluginCommand(templateName: string): Promise<void> {
+    const template = PLUGIN_COMMANDS.find(t => t.name === templateName);
+    if (!template) return;
+
+    const cmd = templateToSlashCommand(template);
+    try {
+      await this.plugin.storage.commands.save(cmd);
+      await this.reloadCommands();
+      this.render();
+      new Notice(`/${template.name} 커맨드가 업데이트됐어.`);
+    } catch {
+      new Notice(`/${template.name} 커맨드 업데이트에 실패했어.`);
     }
   }
 

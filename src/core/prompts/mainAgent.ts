@@ -16,6 +16,7 @@ export interface SystemPromptSettings {
   userName?: string;
   slackNotificationChannel?: string;
   slackDefaultReminderMinutes?: number;
+  designerInsightEnabled?: boolean;
 }
 
 function getPathRules(vaultPath?: string, allowExternalAccess: boolean = false): string {
@@ -370,6 +371,23 @@ function getScheduleInstructions(channel: string, reminderMinutes: number): stri
 **단순 일정 조회**(예: "오늘 일정 알려줘")는 위 절차를 실행하지 말고 Daily Note를 읽어 답변하세요.`;
 }
 
+function getDesignerInsightInstructions(): string {
+  return `
+
+## 일일 디자인 인사이트
+
+새 대화 세션이 시작될 때 (이전 대화 이력이 없는 첫 번째 메시지에 응답할 때), 응답 맨 앞에 디자인 인사이트 한 줄을 추가하세요.
+
+형식:
+💡 *"[인사이트 내용]"* — [출처]
+
+규칙:
+- 디자인 원칙(여백, 대비, 그리드, 정렬, 반복, 근접성), 유명 디자이너 명언, 실무 팁, 디자인 역사 중 하나를 선택
+- 사용자의 작업 컨텍스트와 관련 있으면 우선 선택
+- 한 줄로 짧게, 그 뒤 바로 본문 응답으로 이어갈 것
+- 대화 이력이 있는 세션(재개 또는 이전 메시지가 보이는 경우)에서는 포함하지 않음`;
+}
+
 export function buildSystemPrompt(settings: SystemPromptSettings = {}): string {
   const allowExternalAccess = settings.allowExternalAccess ?? false;
 
@@ -382,6 +400,10 @@ export function buildSystemPrompt(settings: SystemPromptSettings = {}): string {
   const channel = settings.slackNotificationChannel || 'general';
   const reminderMinutes = settings.slackDefaultReminderMinutes ?? 5;
   prompt += getScheduleInstructions(channel, reminderMinutes);
+
+  if (settings.designerInsightEnabled) {
+    prompt += getDesignerInsightInstructions();
+  }
 
   if (settings.customPrompt?.trim()) {
     prompt += '\n\n## Custom Instructions\n\n' + settings.customPrompt.trim();

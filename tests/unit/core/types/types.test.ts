@@ -133,6 +133,7 @@ describe('types.ts', () => {
         effortLevel: 'high',
         slackNotificationChannel: 'general',
         slackDefaultReminderMinutes: 5,
+        designerInsightEnabled: false,
       };
 
       expect(settings.enableBlocklist).toBe(false);
@@ -177,6 +178,7 @@ describe('types.ts', () => {
         effortLevel: 'high',
         slackNotificationChannel: 'general',
         slackDefaultReminderMinutes: 5,
+        designerInsightEnabled: false,
       };
 
       expect(settings.model).toBe('anthropic/custom-model-v1');
@@ -221,6 +223,7 @@ describe('types.ts', () => {
         effortLevel: 'high',
         slackNotificationChannel: 'general',
         slackDefaultReminderMinutes: 5,
+        designerInsightEnabled: false,
       };
 
       expect(settings.lastClaudeModel).toBe('opus');

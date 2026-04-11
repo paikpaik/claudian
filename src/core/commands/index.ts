@@ -6,3 +6,8 @@ export {
   detectBuiltInCommand,
   getBuiltInCommandsForDropdown,
 } from './builtInCommands';
+export {
+  PLUGIN_COMMANDS,
+  type PluginCommandTemplate,
+  templateToSlashCommand,
+} from './pluginCommands';

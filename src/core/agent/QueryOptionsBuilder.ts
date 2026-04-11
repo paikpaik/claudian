@@ -191,6 +191,7 @@ export class QueryOptionsBuilder {
       userName: ctx.settings.userName,
       slackNotificationChannel: ctx.settings.slackNotificationChannel,
       slackDefaultReminderMinutes: ctx.settings.slackDefaultReminderMinutes,
+      designerInsightEnabled: ctx.settings.designerInsightEnabled,
     });
 
     const options: Options = {
@@ -257,6 +258,7 @@ export class QueryOptionsBuilder {
       userName: ctx.settings.userName,
       slackNotificationChannel: ctx.settings.slackNotificationChannel,
       slackDefaultReminderMinutes: ctx.settings.slackDefaultReminderMinutes,
+      designerInsightEnabled: ctx.settings.designerInsightEnabled,
     });
 
     const options: Options = {

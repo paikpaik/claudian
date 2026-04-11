@@ -1,6 +1,7 @@
 import type { App } from 'obsidian';
 import { Modal, Notice, setIcon, Setting } from 'obsidian';
 
+import { PLUGIN_AGENTS, templateToAgentDefinition } from '../../../core/agents/pluginAgents';
 import type { AgentDefinition } from '../../../core/types';
 import { t } from '../../../i18n';
 import type ClaudianPlugin from '../../../main';
@@ -245,13 +246,84 @@ export class AgentSettings {
     if (vaultAgents.length === 0) {
       const emptyEl = this.containerEl.createDiv({ cls: 'claudian-sp-empty-state' });
       emptyEl.setText(t('settings.subagents.noAgents'));
-      return;
+    } else {
+      const listEl = this.containerEl.createDiv({ cls: 'claudian-sp-list' });
+      for (const agent of vaultAgents) {
+        this.renderAgentItem(listEl, agent);
+      }
     }
 
-    const listEl = this.containerEl.createDiv({ cls: 'claudian-sp-list' });
+    this.renderPluginAgentsSection();
+  }
 
-    for (const agent of vaultAgents) {
-      this.renderAgentItem(listEl, agent);
+  private renderPluginAgentsSection(): void {
+    const sectionEl = this.containerEl.createDiv({ cls: 'claudian-pc-section' });
+
+    const details = sectionEl.createEl('details', { cls: 'claudian-pc-details' });
+    const summary = details.createEl('summary', { cls: 'claudian-pc-summary' });
+    summary.createSpan({ text: '기본 제공 에이전트', cls: 'claudian-pc-summary-label' });
+    summary.createSpan({ text: `${PLUGIN_AGENTS.length}개`, cls: 'claudian-pc-summary-count' });
+
+    const listEl = details.createDiv({ cls: 'claudian-pc-list' });
+
+    const installedMap = new Map(
+      this.plugin.agentManager.getAvailableAgents().map(a => [a.name.toLowerCase(), a])
+    );
+
+    for (const template of PLUGIN_AGENTS) {
+      const itemEl = listEl.createDiv({ cls: 'claudian-pc-item' });
+
+      const infoEl = itemEl.createDiv({ cls: 'claudian-pc-info' });
+      const headerRow = infoEl.createDiv({ cls: 'claudian-sp-item-header' });
+      headerRow.createSpan({ text: `@${template.name}`, cls: 'claudian-sp-item-name' });
+      headerRow.createSpan({ text: template.category, cls: 'claudian-pc-badge' });
+      infoEl.createDiv({ text: template.description, cls: 'claudian-sp-item-desc' });
+
+      const installed = installedMap.get(template.name.toLowerCase());
+      const templateAgent = templateToAgentDefinition(template);
+      const needsUpdate = installed !== undefined && installed.prompt !== templateAgent.prompt;
+
+      if (!installed) {
+        const addBtn = itemEl.createEl('button', { text: '추가', cls: 'claudian-pc-add-btn' });
+        addBtn.addEventListener('click', () => { void this.installPluginAgent(template.name); });
+      } else if (needsUpdate) {
+        const updateBtn = itemEl.createEl('button', { text: '업데이트', cls: 'claudian-pc-update-btn' });
+        updateBtn.addEventListener('click', () => { void this.updatePluginAgent(template.name); });
+      } else {
+        const addedEl = itemEl.createDiv({ cls: 'claudian-pc-added' });
+        setIcon(addedEl.createSpan(), 'check');
+        addedEl.createSpan({ text: '최신' });
+      }
+    }
+  }
+
+  private async installPluginAgent(templateName: string): Promise<void> {
+    const template = PLUGIN_AGENTS.find(t => t.name === templateName);
+    if (!template) return;
+
+    const agent = templateToAgentDefinition(template);
+    try {
+      await this.plugin.storage.agents.save(agent);
+      await this.plugin.agentManager.loadAgents();
+      this.render();
+      new Notice(`@${template.name} 에이전트가 추가됐어.`);
+    } catch {
+      new Notice(`@${template.name} 에이전트 추가에 실패했어.`);
+    }
+  }
+
+  private async updatePluginAgent(templateName: string): Promise<void> {
+    const template = PLUGIN_AGENTS.find(t => t.name === templateName);
+    if (!template) return;
+
+    const agent = templateToAgentDefinition(template);
+    try {
+      await this.plugin.storage.agents.save(agent);
+      await this.plugin.agentManager.loadAgents();
+      this.render();
+      new Notice(`@${template.name} 에이전트가 업데이트됐어.`);
+    } catch {
+      new Notice(`@${template.name} 에이전트 업데이트에 실패했어.`);
     }
   }
 

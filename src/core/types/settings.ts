@@ -303,6 +303,9 @@ export interface ClaudianSettings {
   // Slack notification settings
   slackNotificationChannel: string;    // Slack channel name (default: 'general')
   slackDefaultReminderMinutes: number; // Minutes before event to send reminder (0 = no reminder)
+
+  // Designer mode
+  designerInsightEnabled: boolean;  // Show a daily design insight at the start of new sessions
 }
 
 /** Default Claudian-specific settings. */
@@ -373,6 +376,9 @@ export const DEFAULT_SETTINGS: ClaudianSettings = {
   // Slack notification settings
   slackNotificationChannel: 'general',
   slackDefaultReminderMinutes: 5,
+
+  // Designer mode
+  designerInsightEnabled: false,
 };
 
 /** Default CC-compatible settings. */

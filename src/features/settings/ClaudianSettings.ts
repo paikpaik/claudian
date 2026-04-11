@@ -433,6 +433,18 @@ export class ClaudianSettingTab extends PluginSettingTab {
           })
       );
 
+    new Setting(containerEl)
+      .setName('일일 디자인 인사이트')
+      .setDesc('새 대화 시작 시 디자인 명언/원칙 한 줄을 응답 앞에 추가합니다.')
+      .addToggle((toggle) =>
+        toggle
+          .setValue(this.plugin.settings.designerInsightEnabled)
+          .onChange(async (value) => {
+            this.plugin.settings.designerInsightEnabled = value;
+            await this.plugin.saveSettings();
+          })
+      );
+
     new Setting(containerEl).setName(t('settings.safety')).setHeading();
 
     new Setting(containerEl)
