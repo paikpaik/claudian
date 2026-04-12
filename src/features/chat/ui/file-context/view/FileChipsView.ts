@@ -36,7 +36,7 @@ export class FileChipsView {
   }
 
   /** Max visible chips before collapsing. */
-  private static readonly VISIBLE_LIMIT = 3;
+  private static readonly VISIBLE_LIMIT = 2;
 
   private expanded = false;
 

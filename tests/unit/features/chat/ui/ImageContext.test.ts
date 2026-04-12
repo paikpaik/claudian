@@ -483,7 +483,7 @@ describe('ImageContextManager - Private Helpers', () => {
       expect(manager['dropOverlay']?.hasClass('visible')).toBe(true);
     });
 
-    it('handleDragEnter should not show overlay when not dragging files', () => {
+    it('handleDragEnter should show overlay for text/plain (Obsidian internal drag)', () => {
       const event = {
         preventDefault: jest.fn(),
         stopPropagation: jest.fn(),
@@ -492,7 +492,7 @@ describe('ImageContextManager - Private Helpers', () => {
 
       manager['handleDragEnter'](event as any);
 
-      expect(manager['dropOverlay']?.hasClass('visible')).toBeFalsy();
+      expect(manager['dropOverlay']?.hasClass('visible')).toBe(true);
     });
 
     it('handleDragOver should prevent default', () => {
