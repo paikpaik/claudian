@@ -186,8 +186,18 @@ export class PomodoroWidget {
   private renderPomodoroBody(el: HTMLElement): void {
     el.createDiv({ cls: 'claudian-pomo-phase-label', text: this.pomodoroPhaseLabel() });
 
-    this.timerDisplayEl = el.createDiv({ cls: 'claudian-pomo-time' });
+    // Timer row: -5 [time] +5
+    const timeRow = el.createDiv({ cls: 'claudian-pomo-time-row' });
+    if (this.status !== 'running') {
+      const minusBtn = timeRow.createEl('button', { cls: 'claudian-pomo-adj-btn', text: '-5' });
+      minusBtn.addEventListener('click', () => this.adjustTime(-5));
+    }
+    this.timerDisplayEl = timeRow.createDiv({ cls: 'claudian-pomo-time' });
     this.timerDisplayEl.setText(this.formatTime(this.pomodoroSecondsLeft));
+    if (this.status !== 'running') {
+      const plusBtn = timeRow.createEl('button', { cls: 'claudian-pomo-adj-btn', text: '+5' });
+      plusBtn.addEventListener('click', () => this.adjustTime(5));
+    }
 
     // Session progress dots
     const dotsEl = el.createDiv({ cls: 'claudian-pomo-dots' });
@@ -212,8 +222,18 @@ export class PomodoroWidget {
 
     el.createDiv({ cls: 'claudian-pomo-phase-label', text: `${stage.emoji} ${stage.name}` });
 
-    this.timerDisplayEl = el.createDiv({ cls: 'claudian-pomo-time' });
+    // Timer row: -5 [time] +5
+    const timeRow = el.createDiv({ cls: 'claudian-pomo-time-row' });
+    if (this.status !== 'running') {
+      const minusBtn = timeRow.createEl('button', { cls: 'claudian-pomo-adj-btn', text: '-5' });
+      minusBtn.addEventListener('click', () => this.adjustTime(-5));
+    }
+    this.timerDisplayEl = timeRow.createDiv({ cls: 'claudian-pomo-time' });
     this.timerDisplayEl.setText(this.formatTime(this.sprintSecondsLeft));
+    if (this.status !== 'running') {
+      const plusBtn = timeRow.createEl('button', { cls: 'claudian-pomo-adj-btn', text: '+5' });
+      plusBtn.addEventListener('click', () => this.adjustTime(5));
+    }
 
     el.createDiv({ cls: 'claudian-pomo-guide', text: stage.guide });
 
@@ -256,6 +276,18 @@ export class PomodoroWidget {
   }
 
   // ── Timer control ───────────────────────────────────────────────────────────
+
+  /** Adjust current timer by ±N minutes. Clamped to minimum 5 minutes. */
+  private adjustTime(deltaMinutes: number): void {
+    if (this.status === 'running') return;
+    const deltaSec = deltaMinutes * 60;
+    if (this.mode === 'pomodoro') {
+      this.pomodoroSecondsLeft = Math.max(5 * 60, this.pomodoroSecondsLeft + deltaSec);
+    } else {
+      this.sprintSecondsLeft = Math.max(5 * 60, this.sprintSecondsLeft + deltaSec);
+    }
+    this.renderBody();
+  }
 
   private start(): void {
     if (this.status === 'running') return;

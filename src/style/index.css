@@ -39,6 +39,16 @@
 @import "./features/resume-session.css";
 @import "./features/ask-user-question.css";
 @import "./features/plan-mode.css";
+@import "./features/loading-styles.css";
+@import "./features/time-season.css";
+@import "./features/mascot.css";
+
+/* Themes */
+@import "./themes/cyberpunk.css";
+@import "./themes/pastel.css";
+@import "./themes/terminal.css";
+@import "./themes/ink.css";
+@import "./themes/ocean.css";
 
 /* Modals */
 @import "./modals/instruction.css";

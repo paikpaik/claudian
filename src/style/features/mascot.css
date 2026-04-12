@@ -1,0 +1,29 @@
+/* ── Mascot pixel-art widget (inline in header actions row) ──────────────────── */
+
+/* Expand header actions to full width so margin-right: auto can create separation */
+.claudian-header-actions:has(.claudian-mascot-area) {
+  margin-inline-start: 0;
+  flex: 1;
+}
+
+.claudian-mascot-area {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  margin-right: auto;  /* Push all sibling buttons to the far right */
+  opacity: 0.85;
+  transition: opacity 0.3s ease;
+}
+
+.claudian-mascot-area:hover {
+  opacity: 1;
+}
+
+.claudian-mascot-canvas {
+  width: 32px;
+  height: 32px;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}

@@ -229,6 +229,15 @@ export interface KeyboardNavigationSettings {
 /** Tab bar position setting. */
 export type TabBarPosition = 'input' | 'header';
 
+/** Claudian sidebar visual theme. */
+export type ThemeVariant = 'default' | 'cyberpunk' | 'pastel' | 'terminal' | 'ink' | 'ocean';
+
+/** Thinking/loading animation style. */
+export type LoadingStyle = 'pulse' | 'dots' | 'gradient' | 'cursor' | 'wave';
+
+/** Pixel-art mascot character. */
+export type MascotCharacter = 'cloudy' | 'pix' | 'botbot' | 'leaf' | 'moon' | 'otter';
+
 /**
  * Claudian-specific settings stored in .claude/claudian-settings.json.
  * These settings are NOT shared with Claude Code CLI.
@@ -306,6 +315,14 @@ export interface ClaudianSettings {
 
   // Designer mode
   designerInsightEnabled: boolean;  // Show a daily design insight at the start of new sessions
+
+  // UX Experience (CSS-only, zero token impact)
+  themeVariant: ThemeVariant;
+  loadingStyle: LoadingStyle;
+  enableTimeBasedUI: boolean;
+  enableSeasonalEffects: boolean;
+  enableMascot: boolean;
+  mascotCharacter: MascotCharacter;
 }
 
 /** Default Claudian-specific settings. */
@@ -379,6 +396,14 @@ export const DEFAULT_SETTINGS: ClaudianSettings = {
 
   // Designer mode
   designerInsightEnabled: false,
+
+  // UX Experience
+  themeVariant: 'default',
+  loadingStyle: 'pulse',
+  enableTimeBasedUI: false,
+  enableSeasonalEffects: false,
+  enableMascot: false,
+  mascotCharacter: 'cloudy',
 };
 
 /** Default CC-compatible settings. */

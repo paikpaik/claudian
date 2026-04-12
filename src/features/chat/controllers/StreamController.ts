@@ -49,6 +49,8 @@ export interface StreamControllerDeps {
   updateQueueIndicator: () => void;
   /** Get the agent service from the tab. */
   getAgentService?: () => ClaudianService | null;
+  /** Mascot state callback (zero token impact, CSS/Canvas only). */
+  onMascotState?: (state: 'thinking' | 'happy' | 'worried') => void;
 }
 
 export class StreamController {
@@ -131,11 +133,13 @@ export class StreamController {
         // Flush pending tools before rendering error message
         this.flushPendingTools();
         await this.appendText(`\n\n❌ **Error:** ${chunk.content}`);
+        this.deps.onMascotState?.('worried');
         break;
 
       case 'done':
         // Flush any remaining pending tools
         this.flushPendingTools();
+        this.deps.onMascotState?.('happy');
         break;
 
       case 'compact_boundary': {
@@ -888,6 +892,8 @@ export class StreamController {
   showThinkingIndicator(overrideText?: string, overrideCls?: string): void {
     const { state } = this.deps;
 
+    this.deps.onMascotState?.('thinking');
+
     // Early return if no content element
     if (!state.currentContentEl) return;
 
@@ -915,12 +921,22 @@ export class StreamController {
       // Double-check we still have a content element, no indicator exists, and no thinking block
       if (!state.currentContentEl || state.thinkingEl || state.currentThinkingState) return;
 
-      const cls = overrideCls
+      const loadingStyle = this.deps.plugin.settings.loadingStyle || 'pulse';
+      const baseCls = overrideCls
         ? `claudian-thinking ${overrideCls}`
         : 'claudian-thinking';
+      const cls = loadingStyle !== 'pulse' ? `${baseCls} loading-${loadingStyle}` : baseCls;
       state.thinkingEl = state.currentContentEl.createDiv({ cls });
       const text = overrideText || FLAVOR_TEXTS[Math.floor(Math.random() * FLAVOR_TEXTS.length)];
       state.thinkingEl.createSpan({ text });
+
+      // Dots loading style needs three animated dot spans
+      if (loadingStyle === 'dots') {
+        const dotsContainer = state.thinkingEl.createSpan({ cls: 'claudian-thinking-dots' });
+        dotsContainer.createEl('span');
+        dotsContainer.createEl('span');
+        dotsContainer.createEl('span');
+      }
 
       // Create timer span with initial value
       const timerSpan = state.thinkingEl.createSpan({ cls: 'claudian-thinking-hint' });

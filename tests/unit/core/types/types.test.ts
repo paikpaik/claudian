@@ -134,6 +134,12 @@ describe('types.ts', () => {
         slackNotificationChannel: 'general',
         slackDefaultReminderMinutes: 5,
         designerInsightEnabled: false,
+        themeVariant: 'default',
+        loadingStyle: 'pulse',
+        enableTimeBasedUI: false,
+        enableSeasonalEffects: false,
+        enableMascot: false,
+        mascotCharacter: 'cloudy',
       };
 
       expect(settings.enableBlocklist).toBe(false);
@@ -179,6 +185,12 @@ describe('types.ts', () => {
         slackNotificationChannel: 'general',
         slackDefaultReminderMinutes: 5,
         designerInsightEnabled: false,
+        themeVariant: 'default',
+        loadingStyle: 'pulse',
+        enableTimeBasedUI: false,
+        enableSeasonalEffects: false,
+        enableMascot: false,
+        mascotCharacter: 'cloudy',
       };
 
       expect(settings.model).toBe('anthropic/custom-model-v1');
@@ -224,6 +236,12 @@ describe('types.ts', () => {
         slackNotificationChannel: 'general',
         slackDefaultReminderMinutes: 5,
         designerInsightEnabled: false,
+        themeVariant: 'default',
+        loadingStyle: 'pulse',
+        enableTimeBasedUI: false,
+        enableSeasonalEffects: false,
+        enableMascot: false,
+        mascotCharacter: 'cloudy',
       };
 
       expect(settings.lastClaudeModel).toBe('opus');

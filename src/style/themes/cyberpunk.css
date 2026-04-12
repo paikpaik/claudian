@@ -1,0 +1,39 @@
+/* Neon Cyberpunk — dark background, fluorescent accents */
+.claudian-container.theme-cyberpunk {
+  --claudian-brand: #FF00FF;
+  --claudian-brand-rgb: 255, 0, 255;
+  --claudian-theme-bg: #0D0221;
+  --claudian-theme-surface: #1A0A2E;
+  --claudian-theme-text: #E0E0FF;
+  --claudian-theme-text-muted: #9080B0;
+  --claudian-theme-accent: #00FFFF;
+  --claudian-theme-accent-rgb: 0, 255, 255;
+  --claudian-theme-border: rgba(255, 0, 255, 0.2);
+  --claudian-theme-font: var(--font-monospace);
+}
+
+.claudian-container.theme-cyberpunk {
+  background: var(--claudian-theme-bg);
+  color: var(--claudian-theme-text);
+  font-family: var(--claudian-theme-font);
+}
+
+.claudian-container.theme-cyberpunk .claudian-header {
+  background: var(--claudian-theme-surface);
+  border-color: var(--claudian-theme-border);
+}
+
+.claudian-container.theme-cyberpunk .claudian-message-assistant {
+  background: var(--claudian-theme-surface);
+  border-color: var(--claudian-theme-border);
+}
+
+.claudian-container.theme-cyberpunk .claudian-input-wrapper {
+  background: var(--claudian-theme-surface);
+  border-color: var(--claudian-theme-border);
+}
+
+.claudian-container.theme-cyberpunk .claudian-input-wrapper:focus-within {
+  border-color: var(--claudian-brand);
+  box-shadow: 0 0 12px rgba(var(--claudian-brand-rgb), 0.3);
+}

@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import type { App } from 'obsidian';
 import { Notice, PluginSettingTab, Setting } from 'obsidian';
 
-import { getCurrentPlatformKey, getHostnameKey } from '../../core/types';
+import { getCurrentPlatformKey, getHostnameKey, type LoadingStyle, type MascotCharacter, type ThemeVariant } from '../../core/types';
 import { DEFAULT_CLAUDE_MODELS, filterVisibleModelOptions } from '../../core/types/models';
 import { getAvailableLocales, getLocaleDisplayName, setLocale, t } from '../../i18n';
 import type { Locale, TranslationKey } from '../../i18n/types';
@@ -445,6 +445,102 @@ export class ClaudianSettingTab extends PluginSettingTab {
           })
       );
 
+    // ── UX Experience ──────────────────────────────────────────────────────────
+
+    new Setting(containerEl).setName('모양 / 분위기').setHeading();
+
+    new Setting(containerEl)
+      .setName('사이드바 테마')
+      .setDesc('Claudian 사이드바의 시각 테마를 선택합니다.')
+      .addDropdown((dropdown) => {
+        dropdown
+          .addOption('default', '기본')
+          .addOption('cyberpunk', '네온 사이버펑크')
+          .addOption('pastel', '파스텔 드림')
+          .addOption('terminal', '레트로 터미널')
+          .addOption('ink', '수묵화')
+          .addOption('ocean', '오션')
+          .setValue(this.plugin.settings.themeVariant)
+          .onChange(async (value) => {
+            this.plugin.settings.themeVariant = value as ThemeVariant;
+            await this.plugin.saveSettings();
+            this.applyThemeToViews();
+          });
+      });
+
+    new Setting(containerEl)
+      .setName('로딩 애니메이션')
+      .setDesc('Claude가 생각하는 동안 표시할 애니메이션 스타일.')
+      .addDropdown((dropdown) => {
+        dropdown
+          .addOption('pulse', '기본 펄스')
+          .addOption('dots', '도트 웨이브')
+          .addOption('gradient', '그라디언트 바')
+          .addOption('cursor', '타이핑 커서')
+          .addOption('wave', '파도')
+          .setValue(this.plugin.settings.loadingStyle)
+          .onChange(async (value) => {
+            this.plugin.settings.loadingStyle = value as LoadingStyle;
+            await this.plugin.saveSettings();
+          });
+      });
+
+    new Setting(containerEl)
+      .setName('시간대 반응 UI')
+      .setDesc('시간대에 따라 브랜드 컬러가 부드럽게 변합니다 (새벽=보라, 아침=골드, 저녁=주황, 밤=블루).')
+      .addToggle((toggle) =>
+        toggle
+          .setValue(this.plugin.settings.enableTimeBasedUI)
+          .onChange(async (value) => {
+            this.plugin.settings.enableTimeBasedUI = value;
+            await this.plugin.saveSettings();
+          })
+      );
+
+    new Setting(containerEl)
+      .setName('계절 장식')
+      .setDesc('계절에 따라 헤더에 작은 장식이 나타납니다 (봄=벚꽃, 가을=낙엽, 겨울=눈).')
+      .addToggle((toggle) =>
+        toggle
+          .setValue(this.plugin.settings.enableSeasonalEffects)
+          .onChange(async (value) => {
+            this.plugin.settings.enableSeasonalEffects = value;
+            await this.plugin.saveSettings();
+          })
+      );
+
+    new Setting(containerEl)
+      .setName('마스코트')
+      .setDesc('사이드바에 작은 픽셀 아트 캐릭터가 나타나 활동에 반응합니다.')
+      .addToggle((toggle) =>
+        toggle
+          .setValue(this.plugin.settings.enableMascot)
+          .onChange(async (value) => {
+            this.plugin.settings.enableMascot = value;
+            await this.plugin.saveSettings();
+            this.updateMascotViews();
+          })
+      );
+
+    new Setting(containerEl)
+      .setName('마스코트 캐릭터')
+      .setDesc('사이드바에 표시할 마스코트 캐릭터를 선택합니다.')
+      .addDropdown((dropdown) => {
+        dropdown
+          .addOption('cloudy', '클로디 (구름)')
+          .addOption('pix', '픽스 (여우)')
+          .addOption('botbot', '봇봇 (로봇)')
+          .addOption('leaf', '리프 (새싹)')
+          .addOption('moon', '문 (달)')
+          .addOption('otter', '해달')
+          .setValue(this.plugin.settings.mascotCharacter)
+          .onChange(async (value) => {
+            this.plugin.settings.mascotCharacter = value as MascotCharacter;
+            await this.plugin.saveSettings();
+            this.updateMascotViews();
+          });
+      });
+
     new Setting(containerEl).setName(t('settings.safety')).setHeading();
 
     new Setting(containerEl)
@@ -853,6 +949,24 @@ export class ClaudianSettingTab extends PluginSettingTab {
       );
     } catch {
       // Silently ignore restart failures - changes will apply on next conversation
+    }
+  }
+
+  /** Apply theme class to all open ClaudianView instances. */
+  private applyThemeToViews(): void {
+    for (const leaf of this.plugin.app.workspace.getLeavesOfType('claudian-view')) {
+      if (leaf.view instanceof ClaudianView) {
+        leaf.view.applyTheme(this.plugin.settings.themeVariant);
+      }
+    }
+  }
+
+  /** Update mascot on all open ClaudianView instances (toggle on/off or character change). */
+  private updateMascotViews(): void {
+    for (const leaf of this.plugin.app.workspace.getLeavesOfType('claudian-view')) {
+      if (leaf.view instanceof ClaudianView) {
+        leaf.view.updateMascot();
+      }
     }
   }
 

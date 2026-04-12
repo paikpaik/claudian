@@ -785,6 +785,14 @@ export function initializeTabControllers(
     getFileContextManager: () => ui.fileContextManager,
     updateQueueIndicator: () => tab.controllers.inputController?.updateQueueIndicator(),
     getAgentService: () => tab.service,
+    onMascotState: (state) => {
+      for (const leaf of plugin.app.workspace.getLeavesOfType('claudian-view')) {
+        const view = leaf.view;
+        if ('setMascotState' in view && typeof view.setMascotState === 'function') {
+          (view as { setMascotState: (s: string) => void }).setMascotState(state);
+        }
+      }
+    },
   });
 
   // Wire subagent callback now that StreamController exists
@@ -876,6 +884,14 @@ export function initializeTabControllers(
     onForkAll: forkRequestCallback
       ? () => handleForkAll(tab, plugin, forkRequestCallback)
       : undefined,
+    onMascotActivity: () => {
+      for (const leaf of plugin.app.workspace.getLeavesOfType('claudian-view')) {
+        const view = leaf.view;
+        if ('recordMascotActivity' in view && typeof view.recordMascotActivity === 'function') {
+          (view as { recordMascotActivity: () => void }).recordMascotActivity();
+        }
+      }
+    },
   });
 
   // Navigation controller
