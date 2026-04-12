@@ -13,8 +13,15 @@ const IMAGE_EXTENSIONS: Record<string, ImageMediaType> = {
   '.webp': 'image/webp',
 };
 
+/** Text file extensions accepted for context drop (vault files). */
+const TEXT_EXTENSIONS = new Set([
+  '.md', '.txt', '.css', '.js', '.ts', '.json', '.yaml', '.yml', '.html', '.csv',
+]);
+
 export interface ImageContextCallbacks {
   onImagesChanged: () => void;
+  /** Called when a text file (e.g. .md) is dropped. Returns false if rejected (e.g. limit reached). */
+  onTextFileDrop?: (filePath: string) => boolean;
 }
 
 export class ImageContextManager {
@@ -98,7 +105,7 @@ export class ImageContextManager {
     svg.appendChild(polyline);
     svg.appendChild(line);
     dropContent.appendChild(svg);
-    dropContent.createSpan({ text: 'Drop image here' });
+    dropContent.createSpan({ text: 'Drop files here' });
 
     const dropZone = inputWrapper;
 
@@ -112,7 +119,8 @@ export class ImageContextManager {
     e.preventDefault();
     e.stopPropagation();
 
-    if (e.dataTransfer?.types.includes('Files')) {
+    const types = e.dataTransfer?.types;
+    if (types?.includes('Files') || types?.includes('text/plain')) {
       this.dropOverlay?.addClass('visible');
     }
   }
@@ -148,6 +156,26 @@ export class ImageContextManager {
     e.stopPropagation();
     this.dropOverlay?.removeClass('visible');
 
+    // Obsidian internal drag: file paths in text/plain (no File objects)
+    const textData = e.dataTransfer?.getData('text/plain')?.trim();
+    const fileCount = e.dataTransfer?.files?.length ?? 0;
+
+    if (textData && fileCount === 0) {
+      // Pure text drag from Obsidian file explorer
+      this.handleInternalFileDrop(textData);
+      return;
+    }
+
+    if (textData && fileCount > 0) {
+      // Obsidian sometimes provides both text/plain AND files — prefer text path
+      const looksLikePath = textData.includes('.') && !textData.includes('\t');
+      if (looksLikePath) {
+        this.handleInternalFileDrop(textData);
+        return;
+      }
+    }
+
+    // OS file drop (external)
     const files = e.dataTransfer?.files;
     if (!files) return;
 
@@ -155,8 +183,49 @@ export class ImageContextManager {
       const file = files[i];
       if (this.isImageFile(file)) {
         await this.addImageFromFile(file, 'drop');
+      } else if (this.isTextFile(file)) {
+        this.callbacks.onTextFileDrop?.(file.name);
       }
     }
+  }
+
+  /** Handle Obsidian file explorer internal drag (obsidian:// URI or plain path). */
+  private handleInternalFileDrop(data: string): void {
+    const entries = data.split('\n').map(s => s.trim()).filter(Boolean);
+    for (const entry of entries) {
+      const filePath = this.parseObsidianDragData(entry);
+      if (!filePath) continue;
+      const ext = '.' + (filePath.split('.').pop()?.toLowerCase() ?? '');
+      if (TEXT_EXTENSIONS.has(ext)) {
+        this.callbacks.onTextFileDrop?.(filePath);
+      }
+    }
+  }
+
+  /**
+   * Obsidian drags files as `obsidian://open?vault=Name&file=path%2Fto%2Ffile`.
+   * Extract and decode the vault-relative file path, appending .md if missing.
+   */
+  private parseObsidianDragData(data: string): string | null {
+    if (data.startsWith('obsidian://')) {
+      try {
+        const url = new URL(data);
+        const filePath = url.searchParams.get('file');
+        if (!filePath) return null;
+        const decoded = decodeURIComponent(filePath);
+        // Obsidian omits .md extension in the URI
+        return decoded.includes('.') ? decoded : decoded + '.md';
+      } catch {
+        return null;
+      }
+    }
+    // Plain path fallback
+    return data;
+  }
+
+  private isTextFile(file: File): boolean {
+    const ext = path.extname(file.name).toLowerCase();
+    return TEXT_EXTENSIONS.has(ext);
   }
 
   private setupPasteHandler() {

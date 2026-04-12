@@ -483,7 +483,7 @@ describe('ImageContextManager - Private Helpers', () => {
       expect(manager['dropOverlay']?.hasClass('visible')).toBe(true);
     });
 
-    it('handleDragEnter should not show overlay when not dragging files', () => {
+    it('handleDragEnter should show overlay for text/plain (Obsidian internal drag)', () => {
       const event = {
         preventDefault: jest.fn(),
         stopPropagation: jest.fn(),
@@ -492,7 +492,7 @@ describe('ImageContextManager - Private Helpers', () => {
 
       manager['handleDragEnter'](event as any);
 
-      expect(manager['dropOverlay']?.hasClass('visible')).toBeFalsy();
+      expect(manager['dropOverlay']?.hasClass('visible')).toBe(true);
     });
 
     it('handleDragOver should prevent default', () => {
@@ -532,7 +532,7 @@ describe('ImageContextManager - Private Helpers', () => {
       const event = {
         preventDefault: jest.fn(),
         stopPropagation: jest.fn(),
-        dataTransfer: { files: { length: 1, 0: mockFile, [Symbol.iterator]: function* () { yield mockFile; } } },
+        dataTransfer: { files: { length: 1, 0: mockFile, [Symbol.iterator]: function* () { yield mockFile; } }, getData: jest.fn().mockReturnValue('') },
       };
 
       await manager['handleDrop'](event as any);
@@ -552,7 +552,7 @@ describe('ImageContextManager - Private Helpers', () => {
       const event = {
         preventDefault: jest.fn(),
         stopPropagation: jest.fn(),
-        dataTransfer: { files: { length: 1, 0: mockFile } },
+        dataTransfer: { files: { length: 1, 0: mockFile }, getData: jest.fn().mockReturnValue('') },
       };
 
       await manager['handleDrop'](event as any);
@@ -565,7 +565,7 @@ describe('ImageContextManager - Private Helpers', () => {
       const event = {
         preventDefault: jest.fn(),
         stopPropagation: jest.fn(),
-        dataTransfer: { files: undefined },
+        dataTransfer: { files: undefined, getData: jest.fn().mockReturnValue('') },
       };
 
       await manager['handleDrop'](event as any);
