@@ -68,6 +68,8 @@ export interface InputControllerDeps {
   ensureServiceInitialized?: () => Promise<boolean>;
   openConversation?: (conversationId: string) => Promise<void>;
   onForkAll?: () => Promise<void>;
+  /** Mascot activity/state callback (zero token impact). */
+  onMascotActivity?: () => void;
 }
 
 export class InputController {
@@ -131,6 +133,8 @@ export class InputController {
     const content = (contentOverride ?? inputEl.value).trim();
     const hasImages = imageContextManager?.hasImages() ?? false;
     if (!content && !hasImages) return;
+
+    this.deps.onMascotActivity?.();
 
     // Check for built-in commands first (e.g., /clear, /new, /add-dir)
     const builtInCmd = detectBuiltInCommand(content);

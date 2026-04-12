@@ -1,0 +1,37 @@
+/* Ocean — calm deep blue */
+.claudian-container.theme-ocean {
+  --claudian-brand: #1E90FF;
+  --claudian-brand-rgb: 30, 144, 255;
+  --claudian-theme-bg: #0B1628;
+  --claudian-theme-surface: #0F1E33;
+  --claudian-theme-text: #C8D8E8;
+  --claudian-theme-text-muted: #7090A8;
+  --claudian-theme-accent: #87CEEB;
+  --claudian-theme-accent-rgb: 135, 206, 235;
+  --claudian-theme-border: rgba(30, 144, 255, 0.15);
+}
+
+.claudian-container.theme-ocean {
+  background: var(--claudian-theme-bg);
+  color: var(--claudian-theme-text);
+}
+
+.claudian-container.theme-ocean .claudian-header {
+  background: var(--claudian-theme-surface);
+  border-color: var(--claudian-theme-border);
+}
+
+.claudian-container.theme-ocean .claudian-message-assistant {
+  background: var(--claudian-theme-surface);
+  border-color: var(--claudian-theme-border);
+}
+
+.claudian-container.theme-ocean .claudian-input-wrapper {
+  background: var(--claudian-theme-surface);
+  border-color: var(--claudian-theme-border);
+}
+
+.claudian-container.theme-ocean .claudian-input-wrapper:focus-within {
+  border-color: var(--claudian-brand);
+  box-shadow: 0 0 10px rgba(var(--claudian-brand-rgb), 0.2);
+}

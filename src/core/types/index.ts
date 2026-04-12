@@ -57,6 +57,8 @@ export {
   type LegacyPermission,
   legacyPermissionsToCCPermissions,
   legacyPermissionToCCRule,
+  type LoadingStyle,
+  type MascotCharacter,
   parseCCPermissionRule,
   type PermissionMode,
   type PermissionRule,
@@ -64,6 +66,7 @@ export {
   type PlatformCliPaths,  // Kept for migration
   type SlashCommand,
   type TabBarPosition,
+  type ThemeVariant,
 } from './settings';
 
 // Re-export getHostnameKey from utils (moved from settings for architecture compliance)

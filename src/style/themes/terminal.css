@@ -1,0 +1,54 @@
+/* Retro Terminal — 80s hacker aesthetic */
+.claudian-container.theme-terminal {
+  --claudian-brand: #33FF33;
+  --claudian-brand-rgb: 51, 255, 51;
+  --claudian-theme-bg: #0A0A0A;
+  --claudian-theme-surface: #111111;
+  --claudian-theme-text: #33FF33;
+  --claudian-theme-text-muted: #1A9A1A;
+  --claudian-theme-accent: #FFFF33;
+  --claudian-theme-accent-rgb: 255, 255, 51;
+  --claudian-theme-border: rgba(51, 255, 51, 0.15);
+  --claudian-theme-font: var(--font-monospace);
+}
+
+.claudian-container.theme-terminal {
+  background: var(--claudian-theme-bg);
+  color: var(--claudian-theme-text);
+  font-family: var(--claudian-theme-font);
+}
+
+.claudian-container.theme-terminal .claudian-header {
+  background: var(--claudian-theme-surface);
+  border-color: var(--claudian-theme-border);
+}
+
+.claudian-container.theme-terminal .claudian-message-assistant {
+  background: var(--claudian-theme-surface);
+  border-color: var(--claudian-theme-border);
+}
+
+.claudian-container.theme-terminal .claudian-input-wrapper {
+  background: var(--claudian-theme-surface);
+  border-color: var(--claudian-theme-border);
+}
+
+.claudian-container.theme-terminal .claudian-input-wrapper:focus-within {
+  border-color: var(--claudian-brand);
+  box-shadow: 0 0 8px rgba(var(--claudian-brand-rgb), 0.25);
+}
+
+/* Scanline effect */
+.claudian-container.theme-terminal::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    transparent 0px,
+    transparent 2px,
+    rgba(0, 0, 0, 0.06) 2px,
+    rgba(0, 0, 0, 0.06) 4px
+  );
+  z-index: 0;
+}

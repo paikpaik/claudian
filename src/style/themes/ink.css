@@ -1,0 +1,38 @@
+/* Ink / Sumi-e — East Asian minimal, calligraphy feel */
+.claudian-container.theme-ink {
+  --claudian-brand: #5C5C5C;
+  --claudian-brand-rgb: 92, 92, 92;
+  --claudian-theme-bg: #FAFAF8;
+  --claudian-theme-surface: #F2F0EB;
+  --claudian-theme-text: #2C2C2C;
+  --claudian-theme-text-muted: #7A7A72;
+  --claudian-theme-accent: #8B4513;
+  --claudian-theme-accent-rgb: 139, 69, 19;
+  --claudian-theme-border: rgba(44, 44, 44, 0.1);
+  --claudian-theme-font: 'Noto Serif KR', 'Georgia', serif;
+}
+
+.claudian-container.theme-ink {
+  background: var(--claudian-theme-bg);
+  color: var(--claudian-theme-text);
+  font-family: var(--claudian-theme-font);
+}
+
+.claudian-container.theme-ink .claudian-header {
+  background: var(--claudian-theme-surface);
+  border-color: var(--claudian-theme-border);
+}
+
+.claudian-container.theme-ink .claudian-message-assistant {
+  background: var(--claudian-theme-surface);
+  border-color: var(--claudian-theme-border);
+}
+
+.claudian-container.theme-ink .claudian-input-wrapper {
+  background: #FFFFFF;
+  border-color: var(--claudian-theme-border);
+}
+
+.claudian-container.theme-ink .claudian-input-wrapper:focus-within {
+  border-color: var(--claudian-theme-accent);
+}

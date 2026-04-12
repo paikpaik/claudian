@@ -3,7 +3,9 @@ import { ItemView, Notice, Scope, setIcon } from 'obsidian';
 
 import { getContextWindowSize, VIEW_TYPE_CLAUDIAN } from '../../core/types';
 import type ClaudianPlugin from '../../main';
+import { PomodoroWidget } from '../../shared/modals/PomodoroWidget';
 import { LOGO_SVG } from './constants';
+import { MascotEngine } from './mascot';
 import { TabBar, TabManager, updatePlanModeUI } from './tabs';
 import type { TabData, TabId } from './tabs/types';
 
@@ -29,6 +31,9 @@ export class ClaudianView extends ItemView {
   // Header elements
   private historyDropdown: HTMLElement | null = null;
 
+  // Pomodoro / Sprint timer widget (singleton per view, toggled by header button)
+  private pomodoroWidget: PomodoroWidget | null = null;
+
   // Event refs for cleanup
   private eventRefs: EventRef[] = [];
 
@@ -37,6 +42,12 @@ export class ClaudianView extends ItemView {
 
   // Debouncing for tab state persistence
   private pendingPersist: ReturnType<typeof setTimeout> | null = null;
+
+  // Time/season reactive UI interval
+  private timeSeasonInterval: ReturnType<typeof setInterval> | null = null;
+
+  // Pixel-art mascot engine
+  private mascotEngine: MascotEngine | null = null;
 
   constructor(leaf: WorkspaceLeaf, plugin: ClaudianPlugin) {
     super(leaf);
@@ -125,12 +136,19 @@ export class ClaudianView extends ItemView {
     this.viewContainerEl.empty();
     this.viewContainerEl.addClass('claudian-container');
 
+    // Apply visual theme and time/season (CSS-only, zero token impact)
+    this.applyTheme(this.plugin.settings.themeVariant);
+    this.applyTimeSeason();
+
     // Build header (logo only, tab bar and actions moved to nav row)
     const header = this.viewContainerEl.createDiv({ cls: 'claudian-header' });
     this.buildHeader(header);
 
     // Build nav row content (tab badges + header actions)
     this.navRowContent = this.buildNavRowContent();
+
+    // Mascot (must be after buildNavRowContent which creates headerActionsContent)
+    this.initMascot();
 
     // Tab content container (TabManager will populate this)
     this.tabContentEl = this.viewContainerEl.createDiv({ cls: 'claudian-tab-content-container' });
@@ -199,6 +217,125 @@ export class ClaudianView extends ItemView {
     // Cleanup tab bar
     this.tabBar?.destroy();
     this.tabBar = null;
+
+    // Destroy floating timer widget if open
+    this.pomodoroWidget?.destroy();
+    this.pomodoroWidget = null;
+
+    // Stop time/season interval
+    if (this.timeSeasonInterval) {
+      clearInterval(this.timeSeasonInterval);
+      this.timeSeasonInterval = null;
+    }
+
+    // Destroy mascot engine
+    this.mascotEngine?.destroy();
+    this.mascotEngine = null;
+  }
+
+  // ============================================
+  // Theme & Time/Season (CSS-only, zero token impact)
+  // ============================================
+
+  /** Toggle theme class on the container element. */
+  applyTheme(theme: string): void {
+    const el = this.viewContainerEl;
+    if (!el) return;
+    for (const cls of Array.from(el.classList)) {
+      if (cls.startsWith('theme-')) el.removeClass(cls);
+    }
+    if (theme !== 'default') {
+      el.addClass(`theme-${theme}`);
+    }
+  }
+
+  /** Set data-time-period and data-season attributes + start interval. */
+  private applyTimeSeason(): void {
+    this.syncTimeSeasonAttributes();
+    // Re-check every 10 minutes
+    this.timeSeasonInterval = setInterval(() => this.syncTimeSeasonAttributes(), 600_000);
+  }
+
+  private syncTimeSeasonAttributes(): void {
+    const el = this.viewContainerEl;
+    if (!el) return;
+
+    if (this.plugin.settings.enableTimeBasedUI) {
+      const h = new Date().getHours();
+      let period: string;
+      if (h >= 5 && h < 7) period = 'dawn';
+      else if (h >= 7 && h < 11) period = 'morning';
+      else if (h >= 11 && h < 17) period = 'day';
+      else if (h >= 17 && h < 21) period = 'evening';
+      else period = 'night';
+      el.dataset.timePeriod = period;
+    } else {
+      delete el.dataset.timePeriod;
+    }
+
+    if (this.plugin.settings.enableSeasonalEffects) {
+      const m = new Date().getMonth();
+      let season: string;
+      if (m >= 2 && m <= 4) season = 'spring';
+      else if (m >= 5 && m <= 7) season = 'summer';
+      else if (m >= 8 && m <= 10) season = 'autumn';
+      else season = 'winter';
+      el.dataset.season = season;
+    } else {
+      delete el.dataset.season;
+    }
+  }
+
+  // ============================================
+  // Mascot
+  // ============================================
+
+  private initMascot(): void {
+    this.mascotEngine?.destroy();
+    this.mascotEngine = null;
+
+    if (!this.plugin.settings.enableMascot || !this.headerActionsContent) return;
+
+    // Insert mascot area as the FIRST child of the header actions row
+    const area = document.createElement('div');
+    area.className = 'claudian-mascot-area';
+    this.headerActionsContent.insertBefore(area, this.headerActionsContent.firstChild);
+
+    this.mascotEngine = new MascotEngine({
+      character: this.plugin.settings.mascotCharacter,
+      theme: this.plugin.settings.themeVariant,
+      parentEl: area,
+    });
+  }
+
+  /** Re-initialize or update mascot from settings (called by Settings UI). */
+  updateMascot(): void {
+    if (!this.plugin.settings.enableMascot) {
+      // Remove existing mascot
+      this.mascotEngine?.destroy();
+      this.mascotEngine = null;
+      this.headerActionsContent?.querySelector('.claudian-mascot-area')?.remove();
+      return;
+    }
+
+    if (this.mascotEngine) {
+      // Engine exists — just update character/theme in-place
+      this.mascotEngine.setCharacter(this.plugin.settings.mascotCharacter);
+      this.mascotEngine.setTheme(this.plugin.settings.themeVariant);
+    } else {
+      // Engine doesn't exist — full init
+      this.initMascot();
+    }
+  }
+
+  /** Called by StreamController / InputController to update mascot state. */
+  setMascotState(state: 'curious' | 'thinking' | 'happy' | 'worried' | 'celebrate'): void {
+    this.mascotEngine?.setState(state);
+  }
+
+  /** Called when user types or interacts to wake up the mascot. */
+  recordMascotActivity(): void {
+    this.mascotEngine?.recordActivity();
   }
 
   // ============================================
@@ -253,6 +390,21 @@ export class ClaudianView extends ItemView {
     // Header actions (right side)
     this.headerActionsContent = document.createElement('div');
     this.headerActionsContent.className = 'claudian-header-actions';
+
+    // Pomodoro / Sprint timer toggle button
+    const timerBtn = this.headerActionsContent.createDiv({ cls: 'claudian-header-btn' });
+    setIcon(timerBtn, 'timer');
+    timerBtn.setAttribute('aria-label', '뽀모도로 / 디자인 스프린트 타이머');
+    timerBtn.addEventListener('click', () => {
+      if (this.pomodoroWidget) {
+        this.pomodoroWidget.close();
+        this.pomodoroWidget = null;
+      } else {
+        this.pomodoroWidget = new PomodoroWidget({
+          onClose: () => { this.pomodoroWidget = null; },
+        });
+      }
+    });
 
     // New tab button (plus icon)
     const newTabBtn = this.headerActionsContent.createDiv({ cls: 'claudian-header-btn claudian-new-tab-btn' });

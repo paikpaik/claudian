@@ -1,0 +1,100 @@
+/* ── Time-of-day color shifts ────────────────────────────────────────────────── */
+/* Applied via data-time-period attribute on .claudian-container               */
+
+.claudian-container[data-time-period="dawn"] {
+  --claudian-brand: #C77DBA;
+  --claudian-brand-rgb: 199, 125, 186;
+}
+
+.claudian-container[data-time-period="morning"] {
+  --claudian-brand: #E8A838;
+  --claudian-brand-rgb: 232, 168, 56;
+}
+
+/* day = default, no override */
+
+.claudian-container[data-time-period="evening"] {
+  --claudian-brand: #E07040;
+  --claudian-brand-rgb: 224, 112, 64;
+}
+
+.claudian-container[data-time-period="night"] {
+  --claudian-brand: #6B8EBF;
+  --claudian-brand-rgb: 107, 142, 191;
+}
+
+/* ── Seasonal accent shifts ─────────────────────────────────────────────────── */
+/* Applied via data-season attribute on .claudian-container                     */
+
+.claudian-container[data-season="spring"] {
+  --claudian-season-accent: #FFB7B2;
+}
+
+.claudian-container[data-season="summer"] {
+  --claudian-season-accent: #00B4D8;
+}
+
+.claudian-container[data-season="autumn"] {
+  --claudian-season-accent: #E08A00;
+}
+
+.claudian-container[data-season="winter"] {
+  --claudian-season-accent: #90CAF9;
+}
+
+/* ── Seasonal particles (lightweight CSS-only) ──────────────────────────────── */
+
+@keyframes particle-fall {
+  0% { transform: translateY(-10px) rotate(0deg); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translateY(60px) rotate(360deg); opacity: 0; }
+}
+
+@keyframes particle-sway {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(8px); }
+}
+
+.claudian-container[data-season] .claudian-header {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Spring: cherry blossom petals */
+.claudian-container[data-season="spring"] .claudian-header::after {
+  content: '\2740\00a0\2740\00a0\2740'; /* ❀ ❀ ❀ */
+  position: absolute;
+  top: -8px;
+  right: 50px;
+  font-size: 8px;
+  color: #FFB7B2;
+  opacity: 0.5;
+  animation: particle-fall 8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* Autumn: falling leaves */
+.claudian-container[data-season="autumn"] .claudian-header::after {
+  content: '\1F342'; /* 🍂 */
+  position: absolute;
+  top: -8px;
+  right: 60px;
+  font-size: 9px;
+  opacity: 0.4;
+  animation: particle-fall 10s ease-in-out infinite, particle-sway 3s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* Winter: snowflakes */
+.claudian-container[data-season="winter"] .claudian-header::after {
+  content: '\2744'; /* ❄ */
+  position: absolute;
+  top: -8px;
+  right: 55px;
+  font-size: 8px;
+  color: #90CAF9;
+  opacity: 0.4;
+  animation: particle-fall 12s linear infinite;
+  pointer-events: none;
+}

@@ -1,0 +1,36 @@
+/* Pastel Dream — soft warm tones */
+.claudian-container.theme-pastel {
+  --claudian-brand: #E8909A;
+  --claudian-brand-rgb: 232, 144, 154;
+  --claudian-theme-bg: #FFF5F5;
+  --claudian-theme-surface: #FFF0F0;
+  --claudian-theme-text: #5C4A4A;
+  --claudian-theme-text-muted: #9C8888;
+  --claudian-theme-accent: #B5D8CC;
+  --claudian-theme-accent-rgb: 181, 216, 204;
+  --claudian-theme-border: rgba(232, 144, 154, 0.2);
+}
+
+.claudian-container.theme-pastel {
+  background: var(--claudian-theme-bg);
+  color: var(--claudian-theme-text);
+}
+
+.claudian-container.theme-pastel .claudian-header {
+  background: var(--claudian-theme-surface);
+  border-color: var(--claudian-theme-border);
+}
+
+.claudian-container.theme-pastel .claudian-message-assistant {
+  background: var(--claudian-theme-surface);
+  border-color: var(--claudian-theme-border);
+}
+
+.claudian-container.theme-pastel .claudian-input-wrapper {
+  background: #FFFFFF;
+  border-color: var(--claudian-theme-border);
+}
+
+.claudian-container.theme-pastel .claudian-input-wrapper:focus-within {
+  border-color: var(--claudian-brand);
+}
