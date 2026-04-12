@@ -10,7 +10,7 @@ import { patchSetMaxListenersForElectron } from './utils/electronCompat';
 patchSetMaxListenersForElectron();
 
 import type { Editor, MarkdownView } from 'obsidian';
-import { Notice, Plugin } from 'obsidian';
+import { Notice, Plugin, TFile } from 'obsidian';
 
 import { AgentManager } from './core/agents';
 import { McpServerManager } from './core/mcp';
@@ -335,6 +335,33 @@ export default class ClaudianPlugin extends Plugin {
     });
 
     this.addSettingTab(new ClaudianSettingTab(this.app, this));
+
+    // Right-click "Add to Claudian context" on vault files
+    this.registerEvent(
+      this.app.workspace.on('file-menu', (menu, file) => {
+        if (!(file instanceof TFile)) return;
+        if (!file.extension.match(/^(md|txt|css|js|ts|json|yaml|yml|html|csv)$/)) return;
+
+        const view = this.getView();
+        const tab = view?.getActiveTab();
+        const fcm = tab?.ui.fileContextManager;
+        if (!fcm) return;
+
+        const isAttached = fcm.isFileAttached(file.path);
+        menu.addItem((item) => {
+          item
+            .setTitle(isAttached ? 'Claudian 컨텍스트에서 제거' : 'Claudian 컨텍스트에 추가')
+            .setIcon(isAttached ? 'minus-circle' : 'plus-circle')
+            .onClick(() => {
+              if (isAttached) {
+                fcm.detachFileByPath(file.path);
+              } else {
+                fcm.attachFileByPath(file.path);
+              }
+            });
+        });
+      })
+    );
   }
 
   async onunload() {

@@ -337,6 +337,17 @@ function initializeContextManagers(tab: TabData, plugin: ClaudianPlugin): void {
         autoResizeTextarea(dom.inputEl);
         tab.renderer?.scrollToBottomIfNeeded();
       },
+      onTextFileDrop: (filePath: string) => {
+        const fcm = tab.ui.fileContextManager;
+        if (!fcm) return false;
+        const MAX_CONTEXT_FILES = 10;
+        if (fcm.getAttachedFiles().size >= MAX_CONTEXT_FILES) {
+          new Notice(`최대 ${MAX_CONTEXT_FILES}개까지 첨부 가능합니다.`);
+          return false;
+        }
+        fcm.attachFileByPath(filePath);
+        return true;
+      },
     },
     dom.contextRowEl
   );

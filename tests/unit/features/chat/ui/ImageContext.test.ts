@@ -532,7 +532,7 @@ describe('ImageContextManager - Private Helpers', () => {
       const event = {
         preventDefault: jest.fn(),
         stopPropagation: jest.fn(),
-        dataTransfer: { files: { length: 1, 0: mockFile, [Symbol.iterator]: function* () { yield mockFile; } } },
+        dataTransfer: { files: { length: 1, 0: mockFile, [Symbol.iterator]: function* () { yield mockFile; } }, getData: jest.fn().mockReturnValue('') },
       };
 
       await manager['handleDrop'](event as any);
@@ -552,7 +552,7 @@ describe('ImageContextManager - Private Helpers', () => {
       const event = {
         preventDefault: jest.fn(),
         stopPropagation: jest.fn(),
-        dataTransfer: { files: { length: 1, 0: mockFile } },
+        dataTransfer: { files: { length: 1, 0: mockFile }, getData: jest.fn().mockReturnValue('') },
       };
 
       await manager['handleDrop'](event as any);
@@ -565,7 +565,7 @@ describe('ImageContextManager - Private Helpers', () => {
       const event = {
         preventDefault: jest.fn(),
         stopPropagation: jest.fn(),
-        dataTransfer: { files: undefined },
+        dataTransfer: { files: undefined, getData: jest.fn().mockReturnValue('') },
       };
 
       await manager['handleDrop'](event as any);

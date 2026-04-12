@@ -42,6 +42,7 @@ describe('ClaudianPlugin', () => {
           setViewState: jest.fn().mockResolvedValue(undefined),
         }),
         revealLeaf: jest.fn(),
+        on: jest.fn().mockReturnValue({ id: 'event-ref' }),
       },
     };
 
@@ -54,6 +55,7 @@ describe('ClaudianPlugin', () => {
     // Create plugin instance with mocked app
     plugin = new ClaudianPlugin(mockApp, mockManifest);
     (plugin.loadData as jest.Mock).mockResolvedValue({});
+    (plugin.registerEvent as unknown) = jest.fn();
   });
 
   describe('onload', () => {

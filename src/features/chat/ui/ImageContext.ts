@@ -13,8 +13,15 @@ const IMAGE_EXTENSIONS: Record<string, ImageMediaType> = {
   '.webp': 'image/webp',
 };
 
+/** Text file extensions accepted for context drop (vault files). */
+const TEXT_EXTENSIONS = new Set([
+  '.md', '.txt', '.css', '.js', '.ts', '.json', '.yaml', '.yml', '.html', '.csv',
+]);
+
 export interface ImageContextCallbacks {
   onImagesChanged: () => void;
+  /** Called when a text file (e.g. .md) is dropped. Returns false if rejected (e.g. limit reached). */
+  onTextFileDrop?: (filePath: string) => boolean;
 }
 
 export class ImageContextManager {
@@ -98,7 +105,7 @@ export class ImageContextManager {
     svg.appendChild(polyline);
     svg.appendChild(line);
     dropContent.appendChild(svg);
-    dropContent.createSpan({ text: 'Drop image here' });
+    dropContent.createSpan({ text: 'Drop files here' });
 
     const dropZone = inputWrapper;
 
@@ -148,6 +155,13 @@ export class ImageContextManager {
     e.stopPropagation();
     this.dropOverlay?.removeClass('visible');
 
+    // Obsidian internal drag: file paths in text/plain
+    const textData = e.dataTransfer?.getData('text/plain');
+    if (textData && !e.dataTransfer?.files.length) {
+      this.handleInternalFileDrop(textData);
+      return;
+    }
+
     const files = e.dataTransfer?.files;
     if (!files) return;
 
@@ -155,8 +169,26 @@ export class ImageContextManager {
       const file = files[i];
       if (this.isImageFile(file)) {
         await this.addImageFromFile(file, 'drop');
+      } else if (this.isTextFile(file)) {
+        this.callbacks.onTextFileDrop?.(file.name);
       }
     }
+  }
+
+  /** Handle Obsidian file explorer internal drag (path in text/plain). */
+  private handleInternalFileDrop(data: string): void {
+    const paths = data.split('\n').map(p => p.trim()).filter(Boolean);
+    for (const filePath of paths) {
+      const ext = '.' + filePath.split('.').pop()?.toLowerCase();
+      if (TEXT_EXTENSIONS.has(ext)) {
+        this.callbacks.onTextFileDrop?.(filePath);
+      }
+    }
+  }
+
+  private isTextFile(file: File): boolean {
+    const ext = path.extname(file.name).toLowerCase();
+    return TEXT_EXTENSIONS.has(ext);
   }
 
   private setupPasteHandler() {

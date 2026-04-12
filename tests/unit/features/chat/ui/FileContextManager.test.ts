@@ -80,6 +80,8 @@ function createMockApp(options: {
       on: jest.fn(() => ({ id: 'event-ref' })),
       offref: jest.fn(),
       getAbstractFileByPath: jest.fn((filePath: string) => fileMap.get(filePath) || null),
+      getFileByPath: jest.fn((filePath: string) => fileMap.get(filePath) || null),
+      cachedRead: jest.fn().mockResolvedValue('line1\nline2\nline3'),
       getAllLoadedFiles: jest.fn(() => Array.from(fileMap.values())),
       getFiles: jest.fn(() => Array.from(fileMap.values())),
     },

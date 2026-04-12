@@ -60,13 +60,13 @@ export class FileContextManager {
     this.mentionDataProvider = new VaultMentionDataProvider(this.app);
     this.mentionDataProvider.initializeInBackground();
 
-    this.chipsView = new FileChipsView(this.chipsContainerEl, {
+    this.chipsView = new FileChipsView(this.app, this.chipsContainerEl, {
       onRemoveAttachment: (filePath) => {
+        this.state.detachFile(filePath);
         if (filePath === this.currentNotePath) {
           this.currentNotePath = null;
-          this.state.detachFile(filePath);
-          this.refreshCurrentNoteChip();
         }
+        this.refreshChips();
       },
       onOpenFile: async (filePath) => {
         const file = this.app.vault.getAbstractFileByPath(filePath);
@@ -86,7 +86,7 @@ export class FileContextManager {
       this.dropdownContainerEl,
       this.inputEl,
       {
-        onAttachFile: (filePath) => this.state.attachFile(filePath),
+        onAttachFile: (filePath) => { this.state.attachFile(filePath); this.refreshChips(); },
         onMcpMentionChange: (servers) => this.onMcpMentionChange?.(servers),
         onAgentMentionSelect: (agentId) => this.callbacks.onAgentMentionSelect?.(agentId),
         getMentionedMcpServers: () => this.state.getMentionedMcpServers(),
@@ -115,6 +115,32 @@ export class FileContextManager {
 
   getAttachedFiles(): Set<string> {
     return this.state.getAttachedFiles();
+  }
+
+  /** Check if a file path is currently attached to context. */
+  isFileAttached(path: string): boolean {
+    const normalized = this.normalizePathForVault(path);
+    if (!normalized) return false;
+    return this.state.getAttachedFiles().has(normalized);
+  }
+
+  /** Attach a file by vault path (used by right-click menu). */
+  attachFileByPath(path: string): void {
+    const normalized = this.normalizePathForVault(path);
+    if (!normalized) return;
+    this.state.attachFile(normalized);
+    this.refreshChips();
+  }
+
+  /** Detach a file by vault path (used by right-click menu). */
+  detachFileByPath(path: string): void {
+    const normalized = this.normalizePathForVault(path);
+    if (!normalized) return;
+    this.state.detachFile(normalized);
+    if (normalized === this.currentNotePath) {
+      this.currentNotePath = null;
+    }
+    this.refreshChips();
   }
 
   /** Checks whether current note should be sent for this session. */
@@ -266,7 +292,11 @@ export class FileContextManager {
   }
 
   private refreshCurrentNoteChip(): void {
-    this.chipsView.renderCurrentNote(this.currentNotePath);
+    this.refreshChips();
+  }
+
+  private refreshChips(): void {
+    this.chipsView.renderFiles(this.currentNotePath, this.state.getAttachedFiles());
     this.callbacks.onChipsChanged?.();
   }
 

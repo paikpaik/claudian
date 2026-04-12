@@ -112,8 +112,19 @@
 /* File indicator (attached files) */
 .claudian-file-indicator {
   display: none;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;  /* Firefox */
+}
+
+.claudian-file-indicator::-webkit-scrollbar {
+  display: none;
+}
+
+/* Expanded: wrap to multiple lines */
+.claudian-file-indicator--wrap {
+  flex-wrap: wrap;
 }
 
 .claudian-file-chip {
@@ -170,6 +181,34 @@
 
 .claudian-file-chip:hover {
   background: var(--background-modifier-hover);
+}
+
+/* Current note highlight — brand-color left border */
+.claudian-file-chip--current {
+  border-left: 2px solid var(--claudian-brand);
+  padding-left: 6px;
+}
+
+/* "+N more" / collapse toggle chip */
+.claudian-file-chip--toggle {
+  color: var(--text-muted);
+  font-size: 11px;
+  cursor: pointer;
+  border-style: dashed;
+  padding: 3px 8px;
+}
+
+.claudian-file-chip--toggle:hover {
+  color: var(--text-normal);
+  border-color: var(--claudian-brand);
+}
+
+/* Line count hint */
+.claudian-file-chip-lines {
+  color: var(--text-faint);
+  font-size: 11px;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 /* Message Queue Indicator (shown below flavor text in thinking indicator) */
