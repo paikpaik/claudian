@@ -16,6 +16,11 @@ export class FileContextState {
     this.currentNoteSent = true;
   }
 
+  /** Allow re-sending when user explicitly changes context files. */
+  resetCurrentNoteSent(): void {
+    this.currentNoteSent = false;
+  }
+
   isSessionStarted(): boolean {
     return this.sessionStarted;
   }

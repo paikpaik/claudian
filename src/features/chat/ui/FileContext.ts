@@ -65,6 +65,11 @@ export class FileContextManager {
         this.state.detachFile(filePath);
         if (filePath === this.currentNotePath) {
           this.currentNotePath = null;
+          const remaining = this.state.getAttachedFiles();
+          if (remaining.size > 0) {
+            this.currentNotePath = remaining.values().next().value ?? null;
+          }
+          this.state.resetCurrentNoteSent();
         }
         this.refreshChips();
       },
@@ -124,11 +129,14 @@ export class FileContextManager {
     return this.state.getAttachedFiles().has(normalized);
   }
 
-  /** Attach a file by vault path (used by right-click menu). */
+  /** Attach a file by vault path (used by right-click menu, drag & drop). */
   attachFileByPath(path: string): void {
     const normalized = this.normalizePathForVault(path);
     if (!normalized) return;
     this.state.attachFile(normalized);
+    // Set as current note so it gets sent as <current_note> on next message
+    this.currentNotePath = normalized;
+    this.state.resetCurrentNoteSent();
     this.refreshChips();
   }
 
@@ -139,6 +147,12 @@ export class FileContextManager {
     this.state.detachFile(normalized);
     if (normalized === this.currentNotePath) {
       this.currentNotePath = null;
+      // Promote next attached file as current note if available
+      const remaining = this.state.getAttachedFiles();
+      if (remaining.size > 0) {
+        this.currentNotePath = remaining.values().next().value ?? null;
+      }
+      this.state.resetCurrentNoteSent();
     }
     this.refreshChips();
   }
