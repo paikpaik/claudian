@@ -261,6 +261,8 @@ export class AgentSettings {
 
     const details = sectionEl.createEl('details', { cls: 'claudian-pc-details' });
     const summary = details.createEl('summary', { cls: 'claudian-pc-summary' });
+    const chevron = summary.createSpan({ cls: 'claudian-pc-summary-chevron' });
+    setIcon(chevron, 'chevron-right');
     summary.createSpan({ text: '기본 제공 에이전트', cls: 'claudian-pc-summary-label' });
     summary.createSpan({ text: `${PLUGIN_AGENTS.length}개`, cls: 'claudian-pc-summary-count' });
 

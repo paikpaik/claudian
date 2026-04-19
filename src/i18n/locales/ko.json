@@ -103,6 +103,13 @@
   },
   "settings": {
     "title": "Claudian 설정",
+    "tabs": {
+      "general": "일반",
+      "commands": "명령어 & 도구",
+      "appearance": "테마",
+      "safety": "보안",
+      "advanced": "고급"
+    },
     "customization": "사용자 정의",
     "userName": {
       "name": "Claudian이 당신을 어떻게 불러야 합니까?",

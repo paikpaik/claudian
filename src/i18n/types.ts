@@ -101,6 +101,13 @@ export type TranslationKey =
   | 'chat.fork.commandNoMessages'
   | 'chat.fork.commandNoAssistantUuid'
 
+  // Settings - Tabs
+  | 'settings.tabs.general'
+  | 'settings.tabs.commands'
+  | 'settings.tabs.appearance'
+  | 'settings.tabs.safety'
+  | 'settings.tabs.advanced'
+
   // Settings - Customization
   | 'settings.title'
   | 'settings.customization'

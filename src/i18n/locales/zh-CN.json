@@ -103,6 +103,13 @@
   },
   "settings": {
     "title": "Claudian 设置",
+    "tabs": {
+      "general": "常规",
+      "commands": "命令与工具",
+      "appearance": "主题",
+      "safety": "安全",
+      "advanced": "高级"
+    },
     "customization": "个性化设置",
     "userName": {
       "name": "Claudian 应该如何称呼你？",

@@ -3,6 +3,13 @@
   border-top: none;
 }
 
+/* Re-add separator for items that need visual grouping */
+.claudian-settings .setting-item.claudian-sp-divider-top {
+  border-top: 1px solid var(--background-modifier-border);
+  margin-top: 12px;
+  padding-top: 18px;
+}
+
 /* Settings section headings (via setHeading()) */
 .claudian-settings .setting-item-heading {
   padding-top: 18px;
