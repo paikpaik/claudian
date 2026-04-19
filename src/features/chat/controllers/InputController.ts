@@ -70,6 +70,7 @@ export interface InputControllerDeps {
   onForkAll?: () => Promise<void>;
   /** Mascot activity/state callback (zero token impact). */
   onMascotActivity?: () => void;
+  onMascotState?: (state: 'celebrate') => void;
 }
 
 export class InputController {
@@ -135,6 +136,7 @@ export class InputController {
     if (!content && !hasImages) return;
 
     this.deps.onMascotActivity?.();
+    this.deps.onMascotState?.('celebrate');
 
     // Check for built-in commands first (e.g., /clear, /new, /add-dir)
     const builtInCmd = detectBuiltInCommand(content);

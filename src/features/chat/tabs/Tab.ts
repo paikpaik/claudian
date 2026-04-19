@@ -903,6 +903,14 @@ export function initializeTabControllers(
         }
       }
     },
+    onMascotState: (state) => {
+      for (const leaf of plugin.app.workspace.getLeavesOfType('claudian-view')) {
+        const view = leaf.view;
+        if ('setMascotState' in view && typeof view.setMascotState === 'function') {
+          (view as { setMascotState: (s: string) => void }).setMascotState(state);
+        }
+      }
+    },
   });
 
   // Navigation controller

@@ -38,9 +38,18 @@ export const STATE_CONFIGS: Record<MascotStateName, StateConfig> = {
 const SLEEPY_AFTER_MS = 5 * 60_000;   // 5 min inactivity
 const SLEEPING_AFTER_MS = 10 * 60_000; // 10 min inactivity
 
+// Idle variations: brief animations that fire randomly while idle
+const IDLE_VARIATIONS: [MascotStateName, number][] = [
+  ['curious', 1500],
+  ['happy', 2000],
+];
+const IDLE_VARIATION_MIN_MS = 15_000;
+const IDLE_VARIATION_RANGE_MS = 30_000;
+
 export class MascotStateManager {
   private _state: MascotStateName = 'idle';
   private autoReturnTimer: ReturnType<typeof setTimeout> | null = null;
+  private idleVariationTimer: ReturnType<typeof setTimeout> | null = null;
   private lastActivityTime = Date.now();
   private inactivityTimer: ReturnType<typeof setInterval> | null = null;
   private onChange: (() => void) | null = null;
@@ -48,6 +57,7 @@ export class MascotStateManager {
   constructor(onChange?: () => void) {
     this.onChange = onChange ?? null;
     this.inactivityTimer = setInterval(() => this.checkInactivity(), 30_000);
+    this.scheduleIdleVariation();
   }
 
   get state(): MascotStateName { return this._state; }
@@ -67,14 +77,19 @@ export class MascotStateManager {
       this.autoReturnTimer = null;
     }
 
+    this.clearIdleVariation();
+
     // Schedule auto-return if configured
     const config = STATE_CONFIGS[next];
     if (config.autoReturnMs) {
       this.autoReturnTimer = setTimeout(() => {
         this.autoReturnTimer = null;
-        this._state = 'idle';
-        this.onChange?.();
+        this.returnToIdle();
       }, config.autoReturnMs);
+    }
+
+    if (next === 'idle') {
+      this.scheduleIdleVariation();
     }
 
     this.onChange?.();
@@ -88,6 +103,44 @@ export class MascotStateManager {
       this.setState('idle');
     }
   }
+
+  private returnToIdle(): void {
+    this._state = 'idle';
+    this.scheduleIdleVariation();
+    this.onChange?.();
+  }
+
+  // ── Idle variations ─────────────────────────────────────────────────────────
+
+  private scheduleIdleVariation(): void {
+    this.clearIdleVariation();
+    const delay = IDLE_VARIATION_MIN_MS + Math.random() * IDLE_VARIATION_RANGE_MS;
+    this.idleVariationTimer = setTimeout(() => {
+      this.idleVariationTimer = null;
+      if (this._state !== 'idle') return;
+
+      const [state, durationMs] = IDLE_VARIATIONS[Math.floor(Math.random() * IDLE_VARIATIONS.length)];
+      // Set state directly — idle variations should NOT reset the activity timer
+      this._state = state;
+
+      if (this.autoReturnTimer) clearTimeout(this.autoReturnTimer);
+      this.autoReturnTimer = setTimeout(() => {
+        this.autoReturnTimer = null;
+        this.returnToIdle();
+      }, durationMs);
+
+      this.onChange?.();
+    }, delay);
+  }
+
+  private clearIdleVariation(): void {
+    if (this.idleVariationTimer) {
+      clearTimeout(this.idleVariationTimer);
+      this.idleVariationTimer = null;
+    }
+  }
+
+  // ── Inactivity ──────────────────────────────────────────────────────────────
 
   private checkInactivity(): void {
     // Don't override non-idle states (e.g. thinking, happy)
@@ -104,6 +157,7 @@ export class MascotStateManager {
   destroy(): void {
     if (this.autoReturnTimer) clearTimeout(this.autoReturnTimer);
     if (this.inactivityTimer) clearInterval(this.inactivityTimer);
+    this.clearIdleVariation();
     this.autoReturnTimer = null;
     this.inactivityTimer = null;
   }
