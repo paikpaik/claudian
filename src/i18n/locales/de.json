@@ -103,6 +103,13 @@
   },
   "settings": {
     "title": "Claudian Einstellungen",
+    "tabs": {
+      "general": "Allgemein",
+      "commands": "Befehle & Tools",
+      "appearance": "Thema",
+      "safety": "Sicherheit",
+      "advanced": "Erweitert"
+    },
     "customization": "Anpassung",
     "userName": {
       "name": "Wie soll Claudian dich nennen?",

@@ -32,30 +32,53 @@
   align-items: center;
   gap: 8px;
   cursor: pointer;
-  padding: 4px 12px;
+  padding: 6px 12px;
   border-radius: 6px;
   list-style: none;
   user-select: none;
+  background: var(--background-secondary);
+  border-left: 2px solid var(--text-faint);
+  transition: background 0.15s ease, border-color 0.15s ease;
 }
 
 .claudian-pc-summary:hover {
   background: var(--background-modifier-hover);
+  border-left-color: var(--interactive-accent);
+}
+
+.claudian-pc-details[open] > .claudian-pc-summary {
+  border-left-color: var(--interactive-accent);
 }
 
 .claudian-pc-summary::-webkit-details-marker {
   display: none;
 }
 
+.claudian-pc-summary-chevron {
+  color: var(--text-faint);
+  transition: transform 0.15s ease;
+  flex-shrink: 0;
+}
+
+.claudian-pc-summary-chevron svg {
+  width: 12px;
+  height: 12px;
+}
+
+.claudian-pc-details[open] > .claudian-pc-summary .claudian-pc-summary-chevron {
+  transform: rotate(90deg);
+}
+
 .claudian-pc-summary-label {
   font-size: var(--font-ui-small);
-  color: var(--text-muted);
+  color: var(--text-normal);
   font-weight: var(--font-medium);
   flex: 1;
 }
 
 .claudian-pc-summary-count {
   font-size: var(--font-ui-smaller);
-  color: var(--text-faint);
+  color: var(--text-muted);
   background: var(--background-modifier-border);
   padding: 1px 6px;
   border-radius: 10px;

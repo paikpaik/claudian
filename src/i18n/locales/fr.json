@@ -103,6 +103,13 @@
   },
   "settings": {
     "title": "Paramètres Claudian",
+    "tabs": {
+      "general": "Général",
+      "commands": "Commandes & Outils",
+      "appearance": "Thème",
+      "safety": "Sécurité",
+      "advanced": "Avancé"
+    },
     "customization": "Personnalisation",
     "userName": {
       "name": "Comment Claudian doit-il vous appeler ?",

@@ -103,6 +103,13 @@
   },
   "settings": {
     "title": "Настройки Claudian",
+    "tabs": {
+      "general": "Общие",
+      "commands": "Команды и инструменты",
+      "appearance": "Тема",
+      "safety": "Безопасность",
+      "advanced": "Расширенные"
+    },
     "customization": "Персонализация",
     "userName": {
       "name": "Как Claudian должен обращаться к вам?",
