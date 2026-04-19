@@ -50,7 +50,7 @@ export interface StreamControllerDeps {
   /** Get the agent service from the tab. */
   getAgentService?: () => ClaudianService | null;
   /** Mascot state callback (zero token impact, CSS/Canvas only). */
-  onMascotState?: (state: 'thinking' | 'happy' | 'worried') => void;
+  onMascotState?: (state: 'curious' | 'thinking' | 'happy' | 'worried') => void;
 }
 
 export class StreamController {
@@ -91,6 +91,7 @@ export class StreamController {
         this.flushPendingTools();
         if (state.currentThinkingState) {
           this.finalizeCurrentThinkingBlock(msg);
+          this.deps.onMascotState?.('curious');
         }
         msg.content += chunk.content;
         await this.appendText(chunk.content);
