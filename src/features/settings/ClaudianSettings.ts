@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import type { App } from 'obsidian';
 import { Notice, PluginSettingTab, Setting } from 'obsidian';
 
-import { getCurrentPlatformKey, getHostnameKey, type LoadingStyle, type MascotCharacter, type ThemeVariant } from '../../core/types';
+import { type ChatFontSize, getCurrentPlatformKey, getHostnameKey, type LoadingStyle, type MascotCharacter, type ThemeVariant } from '../../core/types';
 import { DEFAULT_CLAUDE_MODELS, filterVisibleModelOptions } from '../../core/types/models';
 import { getAvailableLocales, getLocaleDisplayName, setLocale, t } from '../../i18n';
 import type { Locale, TranslationKey } from '../../i18n/types';
@@ -524,6 +524,24 @@ export class ClaudianSettingTab extends PluginSettingTab {
     new Setting(panel).setName('모양 / 분위기').setHeading();
 
     new Setting(panel)
+      .setName('대화 글자 크기')
+      .setDesc('채팅 메시지와 입력창의 글자 크기를 조절합니다.')
+      .addDropdown((dropdown) => {
+        dropdown
+          .addOption('xs', '아주 작게 (11px)')
+          .addOption('sm', '작게 (12px)')
+          .addOption('default', '기본 (14px)')
+          .addOption('lg', '크게 (16px)')
+          .addOption('xl', '아주 크게 (18px)')
+          .setValue(this.plugin.settings.chatFontSize)
+          .onChange(async (value) => {
+            this.plugin.settings.chatFontSize = value as ChatFontSize;
+            await this.plugin.saveSettings();
+            this.applyFontSizeToViews();
+          });
+      });
+
+    new Setting(panel)
       .setName('사이드바 테마')
       .setDesc('Claudian 사이드바의 시각 테마를 선택합니다.')
       .addDropdown((dropdown) => {
@@ -1040,6 +1058,15 @@ export class ClaudianSettingTab extends PluginSettingTab {
     for (const leaf of this.plugin.app.workspace.getLeavesOfType('claudian-view')) {
       if (leaf.view instanceof ClaudianView) {
         leaf.view.applyTheme(this.plugin.settings.themeVariant);
+      }
+    }
+  }
+
+  /** Apply font size CSS variable to all open ClaudianView instances. */
+  private applyFontSizeToViews(): void {
+    for (const leaf of this.plugin.app.workspace.getLeavesOfType('claudian-view')) {
+      if (leaf.view instanceof ClaudianView) {
+        leaf.view.applyFontSize(this.plugin.settings.chatFontSize);
       }
     }
   }

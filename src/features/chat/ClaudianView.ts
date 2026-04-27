@@ -136,8 +136,9 @@ export class ClaudianView extends ItemView {
     this.viewContainerEl.empty();
     this.viewContainerEl.addClass('claudian-container');
 
-    // Apply visual theme and time/season (CSS-only, zero token impact)
+    // Apply visual theme, font size, and time/season (CSS-only, zero token impact)
     this.applyTheme(this.plugin.settings.themeVariant);
+    this.applyFontSize(this.plugin.settings.chatFontSize);
     this.applyTimeSeason();
 
     // Build header (logo only, tab bar and actions moved to nav row)
@@ -247,6 +248,20 @@ export class ClaudianView extends ItemView {
     if (theme !== 'default') {
       el.addClass(`theme-${theme}`);
     }
+  }
+
+  /** Set --claudian-chat-font-size CSS variable on the container element. */
+  applyFontSize(size: string): void {
+    const el = this.viewContainerEl;
+    if (!el) return;
+    const sizes: Record<string, string> = {
+      xs: '11px',
+      sm: '12px',
+      default: '14px',
+      lg: '16px',
+      xl: '18px',
+    };
+    el.style.setProperty('--claudian-chat-font-size', sizes[size] ?? sizes['default']);
   }
 
   /** Set data-time-period and data-season attributes + start interval. */

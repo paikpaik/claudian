@@ -39,6 +39,7 @@ export {
   type ApprovalDecision,
   type CCPermissions,
   type CCSettings,
+  type ChatFontSize,
   type ClaudianSettings,
   type CliPlatformKey,
   createPermissionRule,

@@ -238,6 +238,8 @@ export type LoadingStyle = 'pulse' | 'dots' | 'gradient' | 'cursor' | 'wave';
 /** Pixel-art mascot character. */
 export type MascotCharacter = 'cloudy' | 'pix' | 'botbot' | 'leaf' | 'moon' | 'otter';
 
+export type ChatFontSize = 'xs' | 'sm' | 'default' | 'lg' | 'xl';
+
 /**
  * Claudian-specific settings stored in .claude/claudian-settings.json.
  * These settings are NOT shared with Claude Code CLI.
@@ -323,6 +325,7 @@ export interface ClaudianSettings {
   enableSeasonalEffects: boolean;
   enableMascot: boolean;
   mascotCharacter: MascotCharacter;
+  chatFontSize: ChatFontSize;
 }
 
 /** Default Claudian-specific settings. */
@@ -404,6 +407,7 @@ export const DEFAULT_SETTINGS: ClaudianSettings = {
   enableSeasonalEffects: false,
   enableMascot: false,
   mascotCharacter: 'cloudy',
+  chatFontSize: 'default',
 };
 
 /** Default CC-compatible settings. */

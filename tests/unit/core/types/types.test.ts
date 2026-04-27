@@ -140,6 +140,7 @@ describe('types.ts', () => {
         enableSeasonalEffects: false,
         enableMascot: false,
         mascotCharacter: 'cloudy',
+        chatFontSize: 'default',
       };
 
       expect(settings.enableBlocklist).toBe(false);
@@ -191,6 +192,7 @@ describe('types.ts', () => {
         enableSeasonalEffects: false,
         enableMascot: false,
         mascotCharacter: 'cloudy',
+        chatFontSize: 'default',
       };
 
       expect(settings.model).toBe('anthropic/custom-model-v1');
@@ -242,6 +244,7 @@ describe('types.ts', () => {
         enableSeasonalEffects: false,
         enableMascot: false,
         mascotCharacter: 'cloudy',
+        chatFontSize: 'default',
       };
 
       expect(settings.lastClaudeModel).toBe('opus');

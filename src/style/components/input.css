@@ -81,7 +81,7 @@
   background: transparent !important;
   color: var(--text-normal);
   font-family: inherit;
-  font-size: 14px;
+  font-size: var(--claudian-chat-font-size);
   line-height: 1.4;
   box-shadow: none !important;
   overflow-y: auto;
