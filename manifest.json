@@ -1,7 +1,7 @@
 {
   "id": "claudian",
   "name": "Claudian",
-  "version": "1.3.3",
+  "version": "1.3.4",
   "minAppVersion": "1.0.0",
   "description": "옵시디언 클로드코드 임베드 플러그인",
   "author": "paikpaik",
