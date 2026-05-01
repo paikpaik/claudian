@@ -64,6 +64,7 @@
 @import "./settings/mcp-settings.css";
 @import "./settings/plugin-settings.css";
 @import "./settings/agent-settings.css";
+@import "./settings/db-settings.css";
 
 /* Accessibility */
 @import "./accessibility.css";

@@ -38,6 +38,7 @@ import {
   normalizeBlockedCommands,
   type StoredClaudianSettings,
 } from './ClaudianSettingsStorage';
+import { DbConnectionStorage } from './DbConnectionStorage';
 import { McpStorage } from './McpStorage';
 import {
   CLAUDIAN_ONLY_FIELDS,
@@ -119,6 +120,7 @@ export class StorageService {
   readonly sessions: SessionStorage;
   readonly mcp: McpStorage;
   readonly agents: AgentVaultStorage;
+  readonly db: DbConnectionStorage;
 
   private adapter: VaultFileAdapter;
   private plugin: Plugin;
@@ -135,6 +137,7 @@ export class StorageService {
     this.sessions = new SessionStorage(this.adapter);
     this.mcp = new McpStorage(this.adapter);
     this.agents = new AgentVaultStorage(this.adapter);
+    this.db = new DbConnectionStorage(this.adapter);
   }
 
   async initialize(): Promise<CombinedSettings> {

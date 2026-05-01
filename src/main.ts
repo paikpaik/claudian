@@ -13,6 +13,7 @@ import type { Editor, MarkdownView } from 'obsidian';
 import { Notice, Plugin, TFile } from 'obsidian';
 
 import { AgentManager } from './core/agents';
+import { DbManager } from './core/db';
 import { McpServerManager } from './core/mcp';
 import { PluginManager } from './core/plugins';
 import { StorageService } from './core/storage';
@@ -191,6 +192,7 @@ export default class ClaudianPlugin extends Plugin {
   mcpManager: McpServerManager;
   pluginManager: PluginManager;
   agentManager: AgentManager;
+  dbManager: DbManager;
   storage: StorageService;
   cliResolver: ClaudeCliResolver;
   private conversations: Conversation[] = [];
@@ -213,6 +215,10 @@ export default class ClaudianPlugin extends Plugin {
     // Initialize agent manager (loads plugin agents from plugin install paths)
     this.agentManager = new AgentManager(vaultPath, this.pluginManager);
     await this.agentManager.loadAgents();
+
+    // Initialize DB manager (starts SSE MCP servers for enabled DB connections)
+    this.dbManager = new DbManager(this.storage.db, this.mcpManager);
+    await this.dbManager.initialize();
 
     this.registerView(
       VIEW_TYPE_CLAUDIAN,
@@ -373,6 +379,7 @@ export default class ClaudianPlugin extends Plugin {
         await this.storage.setTabManagerState(state);
       }
     }
+    await this.dbManager?.destroy();
   }
 
   async activateView() {
