@@ -1,6 +1,9 @@
+export type DbConnectionType = 'mysql' | 'clickhouse';
+
 export interface DbConnection {
   id: string;
   name: string;
+  type: DbConnectionType;
   host: string;
   port: number;
   user: string;

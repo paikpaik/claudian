@@ -1,8 +1,11 @@
 import { Modal, Notice, Setting } from 'obsidian';
 
-import { DbClient } from '../../../core/db/DbClient';
-import type { DbConnection } from '../../../core/db/types';
+import { ClickhouseClient } from '../../../core/db/ClickhouseClient';
+import { MySqlClient } from '../../../core/db/MySqlClient';
+import type { DbConnection, DbConnectionType } from '../../../core/db/types';
 import type ClaudianPlugin from '../../../main';
+
+const DEFAULT_PORT: Record<DbConnectionType, number> = { mysql: 3306, clickhouse: 8123 };
 
 export class DbConnectionManager {
   private containerEl: HTMLElement;
@@ -55,7 +58,12 @@ export class DbConnectionManager {
 
     info.createEl('strong', { text: conn.name, cls: 'claudian-db-item-name' });
     info.createEl('span', {
-      text: `${conn.host}:${conn.port} / ${conn.database}`,
+      text: conn.type === 'clickhouse' ? 'ClickHouse' : 'MySQL',
+      cls: 'claudian-db-type-badge',
+    });
+    const dbLabel = conn.database ? ` / ${conn.database}` : '';
+    info.createEl('span', {
+      text: `${conn.host}:${conn.port}${dbLabel}`,
       cls: 'claudian-db-item-meta',
     });
 
@@ -141,17 +149,35 @@ class DbConnectionModal extends Modal {
 
     const conn: Partial<DbConnection> = this.existing
       ? { ...this.existing }
-      : { host: 'localhost', port: 3306, enabled: false };
+      : { type: 'mysql', host: 'localhost', port: 3306, enabled: false };
 
     new Setting(contentEl).setName('연결 이름').addText((t) =>
       t.setValue(conn.name ?? '').onChange((v) => (conn.name = v))
     );
+
+    // Type selector — port input updates automatically when type changes
+    let portInput: HTMLInputElement;
+    new Setting(contentEl)
+      .setName('종류')
+      .addDropdown((d) => {
+        d.addOption('mysql', 'MySQL')
+          .addOption('clickhouse', 'ClickHouse')
+          .setValue(conn.type ?? 'mysql')
+          .onChange((v) => {
+            conn.type = v as DbConnectionType;
+            if (portInput) portInput.value = String(DEFAULT_PORT[conn.type]);
+            conn.port = DEFAULT_PORT[conn.type];
+          });
+      });
+
     new Setting(contentEl).setName('Host').addText((t) =>
       t.setValue(conn.host ?? 'localhost').onChange((v) => (conn.host = v))
     );
-    new Setting(contentEl).setName('Port').addText((t) =>
-      t.setValue(String(conn.port ?? 3306)).onChange((v) => (conn.port = Number(v) || 3306))
-    );
+    new Setting(contentEl).setName('Port').addText((t) => {
+      portInput = t.inputEl;
+      t.setValue(String(conn.port ?? DEFAULT_PORT[conn.type ?? 'mysql']))
+        .onChange((v) => (conn.port = Number(v) || DEFAULT_PORT[conn.type ?? 'mysql']));
+    });
     new Setting(contentEl).setName('User').addText((t) =>
       t.setValue(conn.user ?? '').onChange((v) => (conn.user = v))
     );
@@ -179,8 +205,9 @@ class DbConnectionModal extends Modal {
       testBtn.disabled = true;
       testBtn.textContent = '테스트 중…';
       try {
-        const client = new DbClient();
-        await client.connect(conn as DbConnection);
+        const c = conn as DbConnection;
+        const client = c.type === 'clickhouse' ? new ClickhouseClient(c) : new MySqlClient(c);
+        await client.connect();
         await client.disconnect();
         new Notice('연결 성공!');
       } catch (err) {
@@ -200,8 +227,9 @@ class DbConnectionModal extends Modal {
       const final: DbConnection = {
         id: this.existing?.id ?? crypto.randomUUID(),
         name: conn.name!.trim(),
+        type: conn.type ?? 'mysql',
         host: conn.host!.trim(),
-        port: conn.port ?? 3306,
+        port: conn.port ?? DEFAULT_PORT[conn.type ?? 'mysql'],
         user: conn.user!.trim(),
         password: conn.password ?? '',
         database: conn.database?.trim() || undefined,

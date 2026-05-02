@@ -1,6 +1,8 @@
 import type { McpServerManager } from '../mcp/McpServerManager';
 import type { DbConnectionStorage } from '../storage/DbConnectionStorage';
+import { ClickhouseClient } from './ClickhouseClient';
 import { DbMcpServer } from './DbMcpServer';
+import { MySqlClient } from './MySqlClient';
 import type { DbConnection } from './types';
 
 interface RunningServer {
@@ -76,7 +78,8 @@ export class DbManager {
   }
 
   private async startServer(conn: DbConnection): Promise<void> {
-    const server = new DbMcpServer(conn);
+    const client = conn.type === 'clickhouse' ? new ClickhouseClient(conn) : new MySqlClient(conn);
+    const server = new DbMcpServer(conn, client);
     const port = await server.start();
     this.running.set(conn.id, { server, port });
     this.mcpManager.addRuntimeServer(`${DB_MCP_PREFIX}${conn.id}`, {

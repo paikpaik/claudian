@@ -4,16 +4,17 @@ import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprot
 import * as http from 'http';
 import * as net from 'net';
 
-import { DbClient } from './DbClient';
+import type { IDbClient } from './IDbClient';
 import type { DbConnection } from './types';
 
 export class DbMcpServer {
   private mcpServer: Server;
   private httpServer: http.Server;
   private transports = new Map<string, SSEServerTransport>();
-  private client = new DbClient();
+  private client: IDbClient;
 
-  constructor(private readonly connection: DbConnection) {
+  constructor(private readonly connection: DbConnection, client: IDbClient) {
+    this.client = client;
     this.mcpServer = new Server(
       { name: `claudian-db-${connection.name}`, version: '1.0.0' },
       { capabilities: { tools: {} } }
@@ -135,7 +136,7 @@ export class DbMcpServer {
   }
 
   async start(): Promise<number> {
-    await this.client.connect(this.connection);
+    await this.client.connect();
     const port = await findFreePort(27400);
     await new Promise<void>((resolve, reject) => {
       this.httpServer.listen(port, '127.0.0.1', resolve).once('error', reject);
