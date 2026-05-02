@@ -12,6 +12,7 @@ import { expandHomePath } from '../../utils/path';
 import { ClaudianView } from '../chat/ClaudianView';
 import { buildNavMappingText, parseNavMappings } from './keyboardNavigation';
 import { AgentSettings } from './ui/AgentSettings';
+import { DbConnectionManager } from './ui/DbConnectionManager';
 import { EnvSnippetManager } from './ui/EnvSnippetManager';
 import { McpSettingsManager } from './ui/McpSettingsManager';
 import { PluginSettingsManager } from './ui/PluginSettingsManager';
@@ -460,6 +461,17 @@ export class ClaudianSettingTab extends PluginSettingTab {
 
     const mcpContainer = panel.createDiv({ cls: 'claudian-mcp-container' });
     new McpSettingsManager(mcpContainer, this.plugin);
+
+    new Setting(panel).setName('데이터베이스').setHeading();
+
+    const dbDesc = panel.createDiv({ cls: 'claudian-db-settings-desc' });
+    dbDesc.createEl('p', {
+      text: 'MySQL 연결을 추가하면 Claude가 자연어로 데이터를 조회합니다. 조회(SELECT)만 허용되며 데이터 변경은 차단됩니다.',
+      cls: 'setting-item-description',
+    });
+
+    const dbContainer = panel.createDiv({ cls: 'claudian-db-container' });
+    new DbConnectionManager(dbContainer, this.plugin);
 
     new Setting(panel).setName(t('settings.plugins.name')).setHeading();
 

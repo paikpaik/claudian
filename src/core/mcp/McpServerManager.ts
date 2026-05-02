@@ -15,6 +15,8 @@ export interface McpStorageAdapter {
 export class McpServerManager {
   private servers: ClaudianMcpServer[] = [];
   private storage: McpStorageAdapter;
+  /** Runtime-only servers (e.g., DB connections). Not persisted to mcp.json. */
+  private runtimeServers = new Map<string, McpServerConfig>();
 
   constructor(storage: McpStorageAdapter) {
     this.storage = storage;
@@ -24,12 +26,22 @@ export class McpServerManager {
     this.servers = await this.storage.load();
   }
 
+  /** Register an ephemeral server that lives only for the current session. */
+  addRuntimeServer(name: string, config: McpServerConfig): void {
+    this.runtimeServers.set(name, config);
+  }
+
+  /** Remove a previously registered runtime server. */
+  removeRuntimeServer(name: string): void {
+    this.runtimeServers.delete(name);
+  }
+
   getServers(): ClaudianMcpServer[] {
     return this.servers;
   }
 
   getEnabledCount(): number {
-    return this.servers.filter((s) => s.enabled).length;
+    return this.servers.filter((s) => s.enabled).length + this.runtimeServers.size;
   }
 
   /**
@@ -38,6 +50,8 @@ export class McpServerManager {
    * A server is included if:
    * - It is enabled AND
    * - Either context-saving is disabled OR the server is @-mentioned
+   *
+   * Runtime servers (DB connections) are always included when present.
    *
    * @param mentionedNames Set of server names that were @-mentioned in the prompt
    */
@@ -53,6 +67,11 @@ export class McpServerManager {
       }
 
       result[server.name] = server.config;
+    }
+
+    // Runtime servers are always active (DB connections)
+    for (const [name, config] of this.runtimeServers) {
+      result[name] = config;
     }
 
     return result;

@@ -1,0 +1,143 @@
+/* DB Connection Settings */
+
+.claudian-db-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.claudian-db-title {
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.claudian-db-add-btn {
+  font-size: 12px;
+  padding: 3px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  background: var(--interactive-accent);
+  color: var(--text-on-accent);
+  border: none;
+}
+
+.claudian-db-add-btn:hover {
+  filter: brightness(1.1);
+}
+
+.claudian-db-empty {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin: 8px 0;
+}
+
+.claudian-db-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.claudian-db-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border-radius: 6px;
+  background: var(--background-secondary);
+  border: 1px solid var(--background-modifier-border);
+}
+
+.claudian-db-item-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.claudian-db-status {
+  flex-shrink: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.claudian-db-status--on  { background: #22c55e; }
+.claudian-db-status--off { background: var(--text-faint); }
+
+.claudian-db-item-name {
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.claudian-db-type-badge {
+  flex-shrink: 0;
+  font-size: 10px;
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--interactive-accent) 15%, transparent);
+  color: var(--interactive-accent);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.claudian-db-item-meta {
+  font-size: 11px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.claudian-db-item-actions {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+  margin-left: 8px;
+}
+
+.claudian-db-btn {
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  background: var(--background-primary);
+  color: var(--text-normal);
+  border: 1px solid var(--background-modifier-border);
+}
+
+.claudian-db-btn:hover { background: var(--background-modifier-hover); }
+
+.claudian-db-btn--active {
+  background: color-mix(in srgb, var(--interactive-accent) 15%, transparent);
+  border-color: var(--interactive-accent);
+  color: var(--interactive-accent);
+}
+
+.claudian-db-btn--primary {
+  background: var(--interactive-accent);
+  color: var(--text-on-accent);
+  border-color: var(--interactive-accent);
+}
+
+.claudian-db-btn--danger { color: var(--color-red, #dc3545); }
+.claudian-db-btn--danger:hover { background: color-mix(in srgb, var(--color-red, #dc3545) 15%, transparent); }
+
+/* Modal */
+
+.claudian-db-modal .setting-item { border-top: none; padding: 6px 0; }
+
+.claudian-db-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--background-modifier-border);
+}
+
+.claudian-db-settings-desc {
+  margin-bottom: 8px;
+}
