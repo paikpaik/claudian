@@ -12,7 +12,7 @@ export class MySqlClient implements IDbClient {
 
   async connect(): Promise<void> {
     const config: mysql.PoolOptions = {
-      host: this.conn.host,
+      host: this.conn.host.replace(/^https?:\/\//, ''),
       port: this.conn.port,
       user: this.conn.user,
       password: this.conn.password,

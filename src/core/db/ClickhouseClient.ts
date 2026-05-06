@@ -11,8 +11,9 @@ export class ClickhouseClient implements IDbClient {
   constructor(private readonly conn: DbConnection) {}
 
   async connect(): Promise<void> {
+    const host = this.conn.host.replace(/^https?:\/\//, '');
     this.client = createClient({
-      url: `http://${this.conn.host}:${this.conn.port}`,
+      url: `http://${host}:${this.conn.port}`,
       username: this.conn.user,
       password: this.conn.password,
       database: this.conn.database || undefined,
