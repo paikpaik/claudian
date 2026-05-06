@@ -228,7 +228,7 @@ class DbConnectionModal extends Modal {
         id: this.existing?.id ?? crypto.randomUUID(),
         name: conn.name!.trim(),
         type: conn.type ?? 'mysql',
-        host: conn.host!.trim(),
+        host: conn.host!.trim().replace(/^https?:\/\//, ''),
         port: conn.port ?? DEFAULT_PORT[conn.type ?? 'mysql'],
         user: conn.user!.trim(),
         password: conn.password ?? '',
