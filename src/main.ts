@@ -217,7 +217,7 @@ export default class ClaudianPlugin extends Plugin {
     await this.agentManager.loadAgents();
 
     // Initialize DB manager (starts SSE MCP servers for enabled DB connections)
-    this.dbManager = new DbManager(this.storage.db, this.mcpManager);
+    this.dbManager = new DbManager(this.storage.db, this.mcpManager, vaultPath);
     await this.dbManager.initialize();
 
     this.registerView(

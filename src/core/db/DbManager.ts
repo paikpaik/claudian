@@ -16,10 +16,10 @@ const DB_MCP_PREFIX = '__db_';
 export class DbManager {
   private running = new Map<string, RunningServer>();
   private connections: DbConnection[] = [];
-
   constructor(
     private readonly storage: DbConnectionStorage,
-    private readonly mcpManager: McpServerManager
+    private readonly mcpManager: McpServerManager,
+    private readonly vaultPath: string = '',
   ) {}
 
   async initialize(): Promise<void> {
@@ -79,7 +79,7 @@ export class DbManager {
 
   private async startServer(conn: DbConnection): Promise<void> {
     const client = conn.type === 'clickhouse' ? new ClickhouseClient(conn) : new MySqlClient(conn);
-    const server = new DbMcpServer(conn, client);
+    const server = new DbMcpServer(conn, client, this.vaultPath);
     const port = await server.start();
     this.running.set(conn.id, { server, port });
     this.mcpManager.addRuntimeServer(`${DB_MCP_PREFIX}${conn.id}`, {
