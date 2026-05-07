@@ -1,4 +1,4 @@
-import type { EventRef, WorkspaceLeaf } from 'obsidian';
+import type { EventRef, TFile, WorkspaceLeaf } from 'obsidian';
 import { ItemView, Notice, Scope, setIcon } from 'obsidian';
 
 import { getContextWindowSize, VIEW_TYPE_CLAUDIAN } from '../../core/types';
@@ -30,6 +30,7 @@ export class ClaudianView extends ItemView {
 
   // Header elements
   private historyDropdown: HTMLElement | null = null;
+  private csvDropdown: HTMLElement | null = null;
 
   // Pomodoro / Sprint timer widget (singleton per view, toggled by header button)
   private pomodoroWidget: PomodoroWidget | null = null;
@@ -421,6 +422,17 @@ export class ClaudianView extends ItemView {
       }
     });
 
+    // CSV file picker dropdown
+    const csvContainer = this.headerActionsContent.createDiv({ cls: 'claudian-csv-container' });
+    const csvBtn = csvContainer.createDiv({ cls: 'claudian-header-btn' });
+    setIcon(csvBtn, 'sheet');
+    csvBtn.setAttribute('aria-label', 'CSV 파일 열기');
+    this.csvDropdown = csvContainer.createDiv({ cls: 'claudian-csv-menu' });
+    csvBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      this.toggleCsvDropdown();
+    });
+
     // New tab button (plus icon)
     const newTabBtn = this.headerActionsContent.createDiv({ cls: 'claudian-header-btn claudian-new-tab-btn' });
     setIcon(newTabBtn, 'square-plus');
@@ -632,6 +644,68 @@ export class ClaudianView extends ItemView {
     }
   }
 
+  private toggleCsvDropdown(): void {
+    if (!this.csvDropdown) return;
+    const isVisible = this.csvDropdown.hasClass('visible');
+    if (isVisible) {
+      this.csvDropdown.removeClass('visible');
+    } else {
+      this.updateCsvDropdown();
+      this.csvDropdown.addClass('visible');
+    }
+  }
+
+  private updateCsvDropdown(): void {
+    if (!this.csvDropdown) return;
+    this.csvDropdown.empty();
+
+    const csvFiles: TFile[] = this.app.vault.getFiles()
+      .filter((f) => f.extension === 'csv')
+      .sort((a, b) => b.stat.mtime - a.stat.mtime);
+
+    this.csvDropdown.createDiv({ cls: 'claudian-history-header', text: 'CSV 파일' });
+
+    const list = this.csvDropdown.createDiv({ cls: 'claudian-history-list' });
+
+    if (csvFiles.length === 0) {
+      list.createEl('div', { text: 'CSV 파일이 없습니다.', cls: 'claudian-history-empty' });
+      return;
+    }
+
+    for (const file of csvFiles) {
+      const item = list.createDiv({ cls: 'claudian-history-item' });
+
+      const iconEl = item.createDiv({ cls: 'claudian-history-item-icon' });
+      setIcon(iconEl, 'sheet');
+
+      const content = item.createDiv({ cls: 'claudian-history-item-content' });
+      content.createDiv({ cls: 'claudian-history-item-title', text: file.basename });
+      const date = new Date(file.stat.mtime);
+      content.createDiv({
+        cls: 'claudian-history-item-date',
+        text: date.toLocaleString('ko-KR', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }),
+      });
+
+      content.addEventListener('click', () => {
+        this.csvDropdown?.removeClass('visible');
+        const fullPath = (this.app.vault.adapter as any).getFullPath(file.path) as string;
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
+        const { shell } = require('electron') as { shell: { openPath: (p: string) => Promise<string> } };
+        void shell.openPath(fullPath);
+      });
+
+      const actions = item.createDiv({ cls: 'claudian-history-item-actions' });
+      const deleteBtn = actions.createEl('button', { cls: 'claudian-action-btn claudian-delete-btn' });
+      setIcon(deleteBtn, 'trash-2');
+      deleteBtn.setAttribute('aria-label', '삭제');
+      deleteBtn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        await this.app.vault.trash(file, true);
+        this.updateCsvDropdown();
+      });
+    }
+  }
+
   private findTabWithConversation(conversationId: string): TabData | null {
     const tabs = this.tabManager?.getAllTabs() ?? [];
     return tabs.find(tab => tab.conversationId === conversationId) ?? null;
@@ -645,6 +719,7 @@ export class ClaudianView extends ItemView {
     // Document-level click to close dropdowns
     this.registerDomEvent(document, 'click', () => {
       this.historyDropdown?.removeClass('visible');
+      this.csvDropdown?.removeClass('visible');
     });
 
     // View-level Shift+Tab to toggle plan mode (works from any focused element)
