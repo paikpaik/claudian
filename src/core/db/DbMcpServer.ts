@@ -223,7 +223,9 @@ function toCsv(rows: Record<string, unknown>[]): string {
     return s.includes(',') || s.includes('"') || s.includes('\n')
       ? `"${s.replace(/"/g, '""')}"` : s;
   };
-  return [cols.join(','), ...rows.map((r) => cols.map((c) => escape(r[c])).join(','))].join('\n');
+  // BOM: Excel이 UTF-8로 올바르게 인식하도록 (한글 등 멀티바이트 문자 깨짐 방지)
+  const bom = '﻿';
+  return bom + [cols.join(','), ...rows.map((r) => cols.map((c) => escape(r[c])).join(','))].join('\n');
 }
 
 function toMarkdownTable(rows: Record<string, unknown>[]): string {
